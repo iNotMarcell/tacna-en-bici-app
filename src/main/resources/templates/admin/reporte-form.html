@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tacna en Bici - Formulario de Reporte</title>
+  <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- CSS de Leaflet para el mapa -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Estilos del Layout del Admin -->
+  <link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+
+  <style>
+    .card-widget {
+      background-color: #ffffff;
+      border: 1px solid #eaedf2;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+      max-width: 900px;
+    }
+
+    .form-control, .form-select {
+      border-radius: 12px;
+      padding: 14px 20px;
+      border: 1px solid #eaedf2;
+      background-color: #f8f9fa;
+      font-size: 0.95rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      box-shadow: none;
+      border-color: #111;
+      background-color: #fff;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f5f7fa;
+    }
+
+    #mapSelector {
+      height: 300px;
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #eaedf2;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-app">
+
+  <!-- Llamamos al sidebar y marcamos 'reportes' como activo -->
+  <div th:replace="~{fragments/admin-sidebar :: sidebar('reportes')}"></div>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h2 class="fw-bold fs-3 mb-1" th:text="${bicicleta.id != null ? 'Editar Reporte #' + bicicleta.id : 'Nuevo Reporte de Robo'}">Formulario de Reporte</h2>
+        <p class="text-secondary small mb-0">Gestiona la información de la bicicleta y el siniestro.</p>
+      </div>
+
+      <a th:href="@{/admin/pendientes}" class="btn btn-outline-dark rounded-pill px-4 fw-semibold py-2">
+        Cancelar y Volver
+      </a>
+    </header>
+
+    <div class="card-widget">
+      <form th:action="@{/bicicletas/guardar}" th:object="${bicicleta}" method="post" enctype="multipart/form-data">
+
+        <!-- Campos Ocultos de Control -->
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{foto}">
+        <input th:if="${bicicleta.usuario != null}" type="hidden" th:field="*{usuario.id}">
+
+        <!-- Campos ocultos para guardar latitud y longitud -->
+        <input type="hidden" th:field="*{latitud}" id="latitudInput">
+        <input type="hidden" th:field="*{longitud}" id="longitudInput">
+
+        <!-- Controles exclusivos para el Administrador -->
+        <h4 class="section-title mt-0 text-primary">Controles de Administración</h4>
+        <div class="row mb-4 bg-light p-4 rounded-4 border">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <label class="form-label text-dark">Estado de Aprobación</label>
+            <select class="form-select border-secondary border-opacity-25 fw-bold" th:field="*{estadoAprobacion}">
+              <option value="PENDIENTE">PENDIENTE DE APROBACIÓN</option>
+              <option value="APROBADA">APROBADA / PUBLICADA</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-dark">Estado del Siniestro</label>
+            <select class="form-select border-secondary border-opacity-25 fw-bold" th:field="*{estado}">
+              <option value="ROBADA">ROBADA</option>
+              <option value="RECUPERADA">RECUPERADA</option>
+            </select>
+          </div>
+        </div>
+
+        <h4 class="section-title">Especificaciones de la Bicicleta</h4>
+        <div class="row mb-3 g-3">
+          <div class="col-md-6">
+            <label class="form-label">Marca</label>
+            <input type="text" class="form-control" th:field="*{marca}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Modelo</label>
+            <input type="text" class="form-control" th:field="*{modelo}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Color Principal</label>
+            <input type="text" class="form-control" th:field="*{color}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Tipo de Bicicleta</label>
+            <select class="form-select" th:field="*{tipo}" required>
+              <option value="Montaña">Montaña (MTB)</option>
+              <option value="Ruta">Ruta</option>
+              <option value="Urbana">Urbana / Paseo</option>
+              <option value="BMX">BMX</option>
+              <option value="Electrica">Eléctrica</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Número de Serie (Opcional)</label>
+            <input type="text" class="form-control" th:field="*{numeroSerie}">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Fotografía</label>
+            <input type="file" name="file" class="form-control bg-white" accept="image/*">
+            <small class="text-secondary mt-1 d-block" th:if="${bicicleta.foto != null}">Ya existe una imagen subida. Selecciona un archivo solo si deseas reemplazarla.</small>
+          </div>
+        </div>
+
+        <h4 class="section-title text-danger">Información del Robo</h4>
+        <div class="row mb-5 g-3">
+          <div class="col-md-6">
+            <label class="form-label">Fecha del Robo</label>
+            <input type="date" class="form-control" name="fechaRobo" id="fechaRobo" th:value="${bicicleta.fechaRobo != null ? #temporals.format(bicicleta.fechaRobo, 'yyyy-MM-dd') : ''}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">¿Denuncia Policial?</label>
+            <select class="form-select" th:field="*{denunciaPolicial}">
+              <option value="true">Sí, fue realizada</option>
+              <option value="false">No se realizó</option>
+            </select>
+          </div>
+
+          <!-- SECCIÓN DEL MAPA INTERACTIVO -->
+          <div class="col-md-12 mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label class="form-label m-0">Ubicar en el Mapa</label>
+              <span id="mapLoading" class="badge bg-warning text-dark d-none">Obteniendo dirección...</span>
+            </div>
+            <div id="mapSelector"></div>
+            <small class="text-secondary d-block mt-2">Haz clic en el mapa o arrastra el marcador rojo para establecer la ubicación exacta del incidente.</small>
+          </div>
+
+          <div class="col-md-12 mt-3">
+            <label class="form-label">Lugar Exacto (Dirección)</label>
+            <input type="text" class="form-control" th:field="*{lugarRobo}" id="lugarRoboInput" required placeholder="La dirección aparecerá aquí automáticamente">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Departamento</label>
+            <input type="text" class="form-control" th:field="*{departamento}">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Provincia</label>
+            <input type="text" class="form-control" th:field="*{provincia}">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Distrito</label>
+            <input type="text" class="form-control" th:field="*{distrito}">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Relato de los Hechos (Opcional)</label>
+            <textarea class="form-control" th:field="*{descripcionRobo}" rows="3"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100 rounded-pill py-3 fw-bold fs-6">
+          Guardar Reporte
+        </button>
+
+      </form>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Script de Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script th:inline="javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+
+    let defaultLat = -18.0146;
+    let defaultLng = -70.2536;
+
+    let savedLat = /*[[${bicicleta.latitud}]]*/ null;
+    let savedLng = /*[[${bicicleta.longitud}]]*/ null;
+
+    let initLat = (savedLat != null && savedLat !== '') ? parseFloat(savedLat) : defaultLat;
+    let initLng = (savedLng != null && savedLng !== '') ? parseFloat(savedLng) : defaultLng;
+
+    const latInput = document.getElementById('latitudInput');
+    const lngInput = document.getElementById('longitudInput');
+    const direccionInput = document.getElementById('lugarRoboInput');
+    const loadingBadge = document.getElementById('mapLoading');
+
+    if (!savedLat || !savedLng) {
+      latInput.value = initLat;
+      lngInput.value = initLng;
+    }
+
+    const map = L.map('mapSelector').setView([initLat, initLng], 15);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
+    }).addTo(map);
+
+    const redIcon = L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    let marker = L.marker([initLat, initLng], { icon: redIcon, draggable: true }).addTo(map);
+
+    function obtenerDireccion(lat, lng) {
+      loadingBadge.classList.remove('d-none');
+
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+              .then(response => response.json())
+              .then(data => {
+                loadingBadge.classList.add('d-none');
+                if (data && data.display_name) {
+                  let partesDireccion = data.display_name.split(",");
+                  let direccionCorta = partesDireccion.slice(0, 3).join(", ");
+
+                  direccionInput.value = direccionCorta;
+                }
+              })
+              .catch(err => {
+                loadingBadge.classList.add('d-none');
+                console.error("Error obteniendo dirección:", err);
+              });
+    }
+
+    marker.on('dragend', function(e) {
+      const position = marker.getLatLng();
+      latInput.value = position.lat;
+      lngInput.value = position.lng;
+      obtenerDireccion(position.lat, position.lng);
+    });
+
+    map.on('click', function(e) {
+      marker.setLatLng(e.latlng);
+      latInput.value = e.latlng.lat;
+      lngInput.value = e.latlng.lng;
+      obtenerDireccion(e.latlng.lat, e.latlng.lng);
+    });
+  });
+</script>
+</body>
+</html>

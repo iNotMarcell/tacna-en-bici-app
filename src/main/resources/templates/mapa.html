@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tacna en Bici - Mapa Interactivo</title>
+  <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      background-color: #f4f4f5;
+    }
+
+    .navbar-pill .nav-link,
+    .navbar-pill .navbar-brand,
+    .navbar-pill .navbar-brand span,
+    .navbar-pill .navbar-brand svg,
+    .navbar-pill .navbar-brand i,
+    .navbar-pill .text-white {
+      color: #111111 !important;
+    }
+    .navbar-pill .nav-btn-outline {
+      color: #111111 !important;
+      border-color: rgba(0, 0, 0, 0.3) !important;
+    }
+    .navbar-pill .nav-btn-outline:hover {
+      background-color: #111111 !important;
+      color: #ffffff !important;
+    }
+    .navbar-pill .nav-link:hover {
+      color: #666666 !important;
+    }
+
+    .map-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    #map { width: 100%; height: 100%; }
+
+    .map-filters {
+      position: absolute;
+      top: 120px;
+      left: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 24px;
+      width: 320px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .filter-title { font-weight: 800; font-size: 1.2rem; color: #111; margin-bottom: 20px; letter-spacing: -0.5px; }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 15px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .filter-option:hover { background: #fff; border-color: #eaedf2; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+
+    .filter-label { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.9rem; color: #333; }
+
+    .marker-icon { width: 14px; height: 14px; border-radius: 50%; }
+    .marker-robada { background-color: #dc3545; box-shadow: 0 0 0 3px rgba(220,53,69,0.2); }
+    .marker-avistamiento { background-color: #fd7e14; box-shadow: 0 0 0 3px rgba(253,126,20,0.2); }
+    .marker-taller { background-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,0.2); }
+    .marker-cafe { background-color: #795548; box-shadow: 0 0 0 3px rgba(121,85,72,0.2); }
+
+    .form-check-input { cursor: pointer; width: 1.2rem; height: 1.2rem; border-color: #adb5bd; }
+    .form-check-input:checked { background-color: #111; border-color: #111; }
+
+    .leaflet-popup-content-wrapper { border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .leaflet-popup-content { margin: 15px; }
+    .popup-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; color: #111; }
+    .popup-meta { font-size: 0.8rem; color: #666; margin-bottom: 10px; }
+    .popup-btn { display: inline-block; background: #111; color: #fff; padding: 6px 12px; border-radius: 50px; text-decoration: none; font-size: 0.8rem; font-weight: 600; margin-top: 10px; text-align: center; width: 100%; }
+    .popup-btn:hover { background: #333; color: #fff; }
+
+    .leaflet-control-geocoder { top: 100px !important; border-radius: 50px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important; border: none !important; }
+    .leaflet-control-geocoder-icon { border-radius: 50px; }
+    .leaflet-control-geocoder-form input { padding: 5px 15px !important; font-family: 'Inter', sans-serif; font-size: 0.95rem; }
+
+    .pill-nav-container { position: relative; z-index: 1010; }
+
+    @media (max-width: 768px) {
+      .map-filters { top: auto; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; padding: 15px; }
+      .filter-option { padding: 8px 12px; margin-bottom: 8px; }
+      .leaflet-control-geocoder { top: 80px !important; right: 10px !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div style="position: absolute; width: 100%; z-index: 1010;">
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+</div>
+
+<div class="map-container">
+
+  <div id="map"></div>
+
+  <div class="map-filters">
+    <h3 class="filter-title">Capas del Mapa</h3>
+
+    <label class="filter-option">
+      <div class="filter-label">
+        <div class="marker-icon marker-robada"></div>
+        Bicicletas Robadas
+      </div>
+      <input class="form-check-input" type="checkbox" id="toggleRobadas" checked>
+    </label>
+
+    <label class="filter-option">
+      <div class="filter-label">
+        <div class="marker-icon marker-avistamiento"></div>
+        Avistamientos
+      </div>
+      <input class="form-check-input" type="checkbox" id="toggleAvistamientos" checked>
+    </label>
+
+    <label class="filter-option">
+      <div class="filter-label">
+        <div class="marker-icon marker-taller"></div>
+        Talleres de Ciclismo
+      </div>
+      <input class="form-check-input" type="checkbox" id="toggleTalleres" checked>
+    </label>
+
+    <label class="filter-option">
+      <div class="filter-label">
+        <div class="marker-icon marker-cafe"></div>
+        Cafés
+      </div>
+      <input class="form-check-input" type="checkbox" id="toggleCafes" checked>
+    </label>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script th:inline="javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+
+    const map = L.map('map', {
+      zoomControl: false
+    }).setView([-18.0146, -70.2536], 14);
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      maxZoom: 19
+    }).addTo(map);
+
+    L.Control.geocoder({
+      defaultMarkGeocoder: false,
+      placeholder: "Buscar calles o lugares...",
+      errorMessage: "No se encontraron resultados."
+    })
+            .on('markgeocode', function(e) {
+              var bbox = e.geocode.bbox;
+              var poly = L.polygon([
+                bbox.getSouthEast(),
+                bbox.getNorthEast(),
+                bbox.getNorthWest(),
+                bbox.getSouthWest()
+              ]);
+              map.fitBounds(poly.getBounds());
+            })
+            .addTo(map);
+
+    const Icon = L.Icon.extend({
+      options: {
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      }
+    });
+
+    const redIcon = new Icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png' });
+    const orangeIcon = new Icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png' });
+    const blueIcon = new Icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png' });
+    const brownIcon = new Icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png' });
+
+    const layerRobadas = L.featureGroup().addTo(map);
+    const layerAvistamientos = L.featureGroup().addTo(map);
+    const layerTalleres = L.featureGroup().addTo(map);
+    const layerCafes = L.featureGroup().addTo(map);
+
+    const coordenadasRobos = {};
+
+    const bicicletas = /*[[${bicicletas}]]*/ [];
+    if(bicicletas) {
+      bicicletas.forEach(b => {
+        if (b.latitud && b.longitud && b.estado === 'ROBADA') {
+
+          coordenadasRobos[b.id] = [b.latitud, b.longitud];
+
+          let popupHtml = `
+                        <div class="popup-title">🚨 ${b.marca} ${b.modelo}</div>
+                        <div class="popup-meta">Color: ${b.color} <br>Lugar: ${b.lugarRobo || b.distrito}</div>
+                        <a href="/bicicletas/${b.id}" class="popup-btn">Ver Detalles</a>
+                    `;
+          L.marker([b.latitud, b.longitud], {icon: redIcon}).bindPopup(popupHtml).addTo(layerRobadas);
+        }
+      });
+    }
+
+    const avistamientos = /*[[${avistamientos}]]*/ [];
+    if(avistamientos) {
+      avistamientos.forEach(a => {
+        if (a.latitud && a.longitud) {
+
+          let puntoAvistamiento = [a.latitud, a.longitud];
+
+          let popupHtml = `
+                        <div class="popup-title">👀 Avistamiento</div>
+                        <div class="popup-meta">Fecha: ${a.fecha} - ${a.hora} <br>Ref: ${a.direccion}</div>
+                        <a href="/bicicletas/${a.bicicleta.id}" class="popup-btn">Ir al Reporte</a>
+                    `;
+          L.marker(puntoAvistamiento, {icon: orangeIcon}).bindPopup(popupHtml).addTo(layerAvistamientos);
+
+          if (coordenadasRobos[a.bicicleta.id]) {
+            let puntoRobo = coordenadasRobos[a.bicicleta.id];
+
+            let lineaConectora = L.polyline([puntoRobo, puntoAvistamiento], {
+              color: '#6c757d',
+              weight: 2,
+              dashArray: '8, 8',
+              opacity: 0.8
+            });
+
+            lineaConectora.addTo(layerAvistamientos);
+          }
+        }
+      });
+    }
+
+    const talleres = [
+      { nombre: "BiciCentro Tacna", direccion: "Av. Bolognesi 123", lat: -18.0125, lng: -70.2505 },
+      { nombre: "Taller Rueda Rápida", direccion: "Calle San Martín S/N", lat: -18.0160, lng: -70.2540 },
+      { nombre: "Taller BiciClínica", direccion: "Calle Principal 789, Tacna", lat: -18.0140, lng: -70.2525 }
+    ];
+    talleres.forEach(t => {
+      let popupHtml = `
+                <div class="popup-title">🔧 ${t.nombre}</div>
+                <div class="popup-meta">${t.direccion}</div>
+            `;
+      L.marker([t.lat, t.lng], {icon: blueIcon}).bindPopup(popupHtml).addTo(layerTalleres);
+    });
+
+    const cafes = [
+      { nombre: "El Pedalista Café", direccion: "Calle San Martín 456, Tacna", lat: -18.0140, lng: -70.2520 }
+    ];
+    cafes.forEach(c => {
+      let popupHtml = `
+                <div class="popup-title">☕ ${c.nombre}</div>
+                <div class="popup-meta">${c.direccion}</div>
+            `;
+      L.marker([c.lat, c.lng], {icon: brownIcon}).bindPopup(popupHtml).addTo(layerCafes);
+    });
+
+    document.getElementById('toggleRobadas').addEventListener('change', function(e) {
+      e.target.checked ? map.addLayer(layerRobadas) : map.removeLayer(layerRobadas);
+    });
+    document.getElementById('toggleAvistamientos').addEventListener('change', function(e) {
+      e.target.checked ? map.addLayer(layerAvistamientos) : map.removeLayer(layerAvistamientos);
+    });
+    document.getElementById('toggleTalleres').addEventListener('change', function(e) {
+      e.target.checked ? map.addLayer(layerTalleres) : map.removeLayer(layerTalleres);
+    });
+    document.getElementById('toggleCafes').addEventListener('change', function(e) {
+      e.target.checked ? map.addLayer(layerCafes) : map.removeLayer(layerCafes);
+    });
+  });
+</script>
+</body>
+</html>

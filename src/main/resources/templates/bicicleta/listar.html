@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tacna en Bici - Reportes Activos</title>
+    <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body {
+            background-color: #f4f4f5;
+        }
+
+        .main-container {
+            padding-top: 100px;
+            padding-bottom: 80px;
+        }
+
+
+        .navbar-pill .nav-link,
+        .navbar-pill .navbar-brand,
+        .navbar-pill .navbar-brand span,
+        .navbar-pill .navbar-brand svg,
+        .navbar-pill .navbar-brand i,
+        .navbar-pill .text-white {
+            color: #111111 !important;
+        }
+        .navbar-pill .nav-btn-outline {
+            color: #111111 !important;
+            border-color: rgba(0, 0, 0, 0.3) !important;
+        }
+        .navbar-pill .nav-btn-outline:hover {
+            background-color: #111111 !important;
+            color: #ffffff !important;
+        }
+        .navbar-pill .nav-link:hover {
+            color: #666666 !important;
+        }
+
+        .top-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+        @media (min-width: 992px) {
+            .top-controls {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .search-pill {
+            background: #ffffff;
+            border-radius: 50px;
+            padding: 6px 6px 6px 20px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .search-pill input {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 8px 15px;
+            font-size: 0.95rem;
+            background: transparent;
+        }
+        .search-pill button {
+            border-radius: 40px !important;
+            padding: 10px 24px;
+            font-weight: 500;
+        }
+
+        .filters-pill {
+            background: #ffffff;
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .filters-pill select {
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #111;
+            cursor: pointer;
+            box-shadow: none !important;
+        }
+        .filters-pill select:focus { outline: none; }
+        .divider { width: 1px; height: 20px; background-color: #eaeaea; margin: 0 5px; }
+
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .bento-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .bento-wide {
+                grid-column: span 2;
+            }
+        }
+
+        .bento-card {
+            position: relative;
+            border-radius: 32px;
+            overflow: hidden;
+            height: 420px;
+            background-color: #111111;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 32px;
+            text-decoration: none !important;
+            color: #ffffff !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .bento-card:hover {
+            transform: scale(0.98);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            color: #ffffff !important;
+        }
+
+        .bento-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .bento-card:hover .bento-bg {
+            transform: scale(1.08);
+        }
+
+
+        .bento-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+            z-index: 2;
+        }
+
+        .bento-content {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            padding-right: 50px;
+        }
+
+        .bento-status-top {
+            position: absolute;
+            top: 32px;
+            left: 32px;
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #f03e46; box-shadow: 0 0 10px rgba(240,62,70,0.6); }
+        .dot-green { background-color: #198754; box-shadow: 0 0 10px rgba(25,135,84,0.6); }
+
+        .bento-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+        }
+
+        .bento-subtitle {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 20px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bento-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .bento-tag {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .bento-arrow {
+            position: absolute;
+            bottom: 32px;
+            right: 32px;
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .bento-card:hover .bento-arrow {
+            background: #ffffff;
+            color: #111111;
+            transform: scale(1.1) rotate(45deg);
+        }
+
+
+        .admin-table-card { background: #111111; border-radius: 32px; padding: 40px; color: #ffffff; }
+        .admin-table { color: #ffffff; border-color: rgba(255,255,255,0.1); }
+        .admin-table th { color: #888888; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 15px 10px; background: transparent; }
+        .admin-table td { background: transparent; color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px 10px; vertical-align: middle; }
+
+        .empty-state { padding: 80px 20px; text-align: center; background: #ffffff; border-radius: 32px; border: 1px dashed #dee2e6; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Redujimos drásticamente los paddings laterales (px-2 px-md-3) para ocupar el 98% del ancho de pantalla -->
+<div class="container-fluid px-2 px-md-3 main-container">
+
+    <div class="d-flex align-items-center gap-3 mb-3" data-aos="fade-down">
+        <h1 class="fw-bold text-dark m-0 fs-2" style="letter-spacing: -1px; margin-left: 10px !important;">Directorio de Bicicletas</h1>
+    </div>
+
+    <!-- Controles Superiores -->
+    <div class="top-controls px-2" data-aos="fade-up" data-aos-delay="100">
+
+        <form method="get" th:action="@{/bicicletas}" class="search-pill">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input class="form-control flex-grow-1" name="buscar" placeholder="Buscar por marca, modelo o distrito..." th:value="${buscar}">
+            <button class="btn btn-dark">Buscar</button>
+        </form>
+
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="filters-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+                <select id="filtroEstado">
+                    <option value="ALL">Estado (Todos)</option>
+                    <option value="ROBADA">Solo Robadas</option>
+                    <option value="RECUPERADA">Solo Recuperadas</option>
+                </select>
+                <div class="divider"></div>
+                <select id="filtroTipo">
+                    <option value="ALL">Tipo (Todos)</option>
+                    <option value="Montaña">Montaña</option>
+                    <option value="Urbana">Urbana</option>
+                    <option value="Ruta">Ruta</option>
+                    <option value="BMX">BMX</option>
+                    <option value="Eléctrica">Eléctrica</option>
+                </select>
+            </div>
+
+            <a th:if="${usuarioLogueado != null}" th:href="@{/bicicletas/nuevo}" class="btn btn-dark rounded-pill px-4 py-2" style="height: 44px; display: flex; align-items: center;">
+                + Nuevo Reporte
+            </a>
+        </div>
+    </div>
+
+    <!-- Estados Vacíos -->
+    <div th:if="${#lists.isEmpty(bicicletas)}" class="empty-state mx-2" data-aos="fade-in">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" stroke-width="1.5" class="mb-3">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h4 class="fw-bold text-dark mb-2">No se encontraron reportes aprobados</h4>
+        <p class="text-secondary mb-0">Actualmente no existen bicicletas públicas que coincidan con la búsqueda.</p>
+    </div>
+
+    <div id="js-empty-state" class="empty-state mx-2 d-none">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" stroke-width="1.5" class="mb-3">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        <h4 class="fw-bold text-dark mb-2">Sin resultados de filtro</h4>
+        <p class="text-secondary mb-0">No hay bicicletas que coincidan con los filtros seleccionados.</p>
+    </div>
+
+    <!-- Grid Bento -->
+    <div class="bento-grid" id="bikesGrid">
+        <div class="bike-item" th:each="b, stat : ${bicicletas}"
+             th:classappend="${stat.index == 0 or stat.index == 3 or stat.index == 6} ? 'bento-wide' : ''"
+             th:data-estado="${b.estado}" th:data-tipo="${b.tipo}"
+             data-aos="fade-up" th:data-aos-delay="${(stat.index % 3) * 100}">
+
+            <a th:href="@{'/bicicletas/' + ${b.id}}" class="bento-card">
+
+                <!-- Imagen de Fondo -->
+                <div class="bento-bg" th:if="${b.foto != null}" th:style="'background-image: url(data:image/jpeg;base64,' + ${b.foto} + ')'"></div>
+                <div class="bento-bg" th:if="${b.foto == null}" style="background-image: url('/img/sin-imagen.png')"></div>
+
+                <!-- Sombreado Protector -->
+                <div class="bento-overlay"></div>
+
+                <!-- Etiqueta Superior Izquierda -->
+                <div class="bento-status-top" th:if="${b.estado == 'ROBADA'}">
+                    <div class="status-dot dot-red"></div> ESTADO · ROBADA
+                </div>
+                <div class="bento-status-top" th:if="${b.estado == 'RECUPERADA'}">
+                    <div class="status-dot dot-green"></div> ESTADO · RECUPERADA
+                </div>
+
+                <!-- Contenido Principal (Abajo) -->
+                <div class="bento-content">
+                    <h3 class="bento-title" th:text="${b.marca + ' ' + b.modelo}"></h3>
+                    <div class="bento-subtitle">
+                        <span>Reporte #<span th:text="${b.id}"></span></span>
+                        <span>•</span>
+                        <span th:text="${b.distrito}"></span>
+                    </div>
+
+                    <div class="bento-tags">
+                        <span class="bento-tag" th:text="${b.tipo}"></span>
+                        <span class="bento-tag" th:if="${b.fechaRobo != null}" th:text="${#temporals.format(b.fechaRobo, 'dd MMM yyyy')}"></span>
+                    </div>
+                </div>
+
+                <!-- Flecha de acción LoroLabs -->
+                <div class="bento-arrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"></line><polyline points="10 5 19 5 19 14"></polyline></svg>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Panel de Administración Inferior -->
+    <div th:if="${usuarioLogueado != null}" class="admin-table-card mt-5 mb-5 mx-2" data-aos="fade-up">
+        <div class="d-flex align-items-center mb-4">
+            <span th:if="${#strings.toString(usuarioLogueado.rol) == 'ADMIN'}" class="badge bg-warning text-dark rounded-pill px-3 py-2 me-3 fw-bold">ADMIN PANEL</span>
+            <span th:if="${#strings.toString(usuarioLogueado.rol) != 'ADMIN'}" class="badge bg-light text-dark rounded-pill px-3 py-2 me-3 fw-bold">MI CUENTA</span>
+
+            <h3 class="m-0 fw-bold fs-4" th:text="${#strings.toString(usuarioLogueado.rol) == 'ADMIN' ? 'Gestión General de Reportes' : 'Mis Reportes Registrados'}"></h3>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table admin-table m-0 align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Bicicleta</th>
+                    <th th:if="${#strings.toString(usuarioLogueado.rol) == 'ADMIN'}">Usuario</th>
+                    <th>Aprobación</th>
+                    <th>Estado de Búsqueda</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+                </thead>
+                <tr th:each="p : ${tablaAbajo}">
+                    <td class="fw-bold text-secondary">#<span th:text="${p.id}"></span></td>
+                    <td>
+                        <div class="fw-bold text-white" th:text="${p.marca + ' ' + p.modelo}"></div>
+                        <div class="small text-secondary" th:text="${p.tipo}"></div>
+                    </td>
+                    <td th:if="${usuarioLogueado != null and #strings.toString(usuarioLogueado.rol) == 'ADMIN'}" th:text="${p.usuario != null ? p.usuario.nombres : 'S/N'}"></td>
+
+                    <td>
+                        <span th:if="${p.estadoAprobacion == 'PENDIENTE'}" class="badge bg-warning text-dark px-3 py-2 rounded-pill">EN REVISIÓN</span>
+                        <span th:if="${p.estadoAprobacion == 'APROBADA'}" class="badge bg-success text-white px-3 py-2 rounded-pill">PÚBLICA</span>
+                    </td>
+
+                    <td>
+                        <span th:if="${p.estado == 'ROBADA'}" class="badge bg-danger px-3 py-2 rounded-pill">ROBADA</span>
+                        <span th:if="${p.estado == 'RECUPERADA'}" class="badge bg-primary px-3 py-2 rounded-pill">RECUPERADA</span>
+                    </td>
+
+                    <td class="text-end">
+                        <div class="d-flex gap-2 justify-content-end align-items-center">
+
+                            <a th:href="@{'/bicicletas/' + ${p.id}}" class="btn btn-sm btn-light border rounded-pill px-3 d-inline-flex align-items-center gap-1" title="Ver Detalle">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                Ver
+                            </a>
+
+                            <a th:if="${p.estado == 'RECUPERADA'}"
+                               th:href="@{'/bicicletas/' + ${p.id}}"
+                               class="btn btn-outline-light text-white border-secondary border-opacity-25 btn-sm rounded-pill px-3 fw-bold" style="font-size: 0.75rem;">
+                                Detalles
+                            </a>
+
+                            <th:block th:if="${p.estado != 'RECUPERADA'}">
+
+                                <a th:if="${usuarioLogueado != null and #strings.toString(usuarioLogueado.rol) == 'ADMIN' and p.estadoAprobacion == 'PENDIENTE'}"
+                                   th:href="@{'/bicicletas/aprobar/' + ${p.id}}"
+                                   class="btn btn-warning text-dark btn-sm rounded-pill px-3 fw-bold btn-approve">
+                                    Aprobar
+                                </a>
+
+                                <a th:if="${p.estadoAprobacion == 'APROBADA' and p.estado == 'ROBADA'}"
+                                   th:href="@{'/bicicletas/encontrada/' + ${p.id}}"
+                                   class="btn btn-success btn-sm rounded-pill px-3 fw-bold btn-found">
+                                    ¡Encontrada!
+                                </a>
+
+                                <a th:href="@{'/bicicletas/editar/' + ${p.id}}" class="btn btn-dark border border-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Editar Reporte">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                </a>
+
+                                <a th:href="@{'/bicicletas/eliminar/' + ${p.id}}" class="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center btn-delete" style="width: 32px; height: 32px;" title="Eliminar Reporte">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </a>
+
+                            </th:block>
+
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${tablaAbajo == null or #lists.isEmpty(tablaAbajo)}">
+                    <td colspan="6" class="text-center py-5">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.5" class="mb-3"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <p class="text-secondary mb-0">No tienes reportes registrados en este momento.</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        AOS.init({ once: true, offset: 30, duration: 800 });
+
+        const selectEstado = document.getElementById('filtroEstado');
+        const selectTipo = document.getElementById('filtroTipo');
+        const bikeItems = document.querySelectorAll('.bike-item');
+        const jsEmptyState = document.getElementById('js-empty-state');
+
+        function aplicarFiltros() {
+            const estadoReq = selectEstado.value.toUpperCase();
+            const tipoReq = selectTipo.value.toUpperCase();
+            let visibles = 0;
+
+            bikeItems.forEach(item => {
+                const bEstado = item.getAttribute('data-estado').toUpperCase();
+                const bTipo = item.getAttribute('data-tipo').toUpperCase();
+
+                const cumpleEstado = (estadoReq === 'ALL' || bEstado === estadoReq);
+                const cumpleTipo = (tipoReq === 'ALL' || bTipo.includes(tipoReq));
+
+                if (cumpleEstado && cumpleTipo) {
+                    item.style.display = '';
+                    visibles++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            if (visibles === 0 && bikeItems.length > 0) {
+                jsEmptyState.classList.remove('d-none');
+            } else {
+                jsEmptyState.classList.add('d-none');
+            }
+        }
+
+        if (selectEstado && selectTipo) {
+            selectEstado.addEventListener('change', aplicarFiltros);
+            selectTipo.addEventListener('change', aplicarFiltros);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.has('eliminado')) {
+            Swal.fire({ icon: 'success', title: '¡Eliminado!', text: 'El reporte fue eliminado.', timer: 3000, showConfirmButton: false, customClass: { popup: 'rounded-4' } });
+        } else if (urlParams.has('error')) {
+            Swal.fire({ icon: 'error', title: '¡Error!', text: 'Hubo un problema al procesar la solicitud.', customClass: { popup: 'rounded-4' } });
+        } else if (urlParams.has('encontrada')) {
+            Swal.fire({ icon: 'success', title: '¡Qué gran noticia!', text: 'La bicicleta ha sido marcada como RECUPERADA.', timer: 4000, showConfirmButton: false, customClass: { popup: 'rounded-4' } });
+        }
+
+        if (urlParams.has('eliminado') || urlParams.has('error') || urlParams.has('encontrada')) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const urlDestino = this.getAttribute('href');
+                Swal.fire({
+                    title: '¿Estás seguro?', text: "¡Esta acción eliminará el reporte de forma permanente!", icon: 'warning',
+                    showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar', customClass: { popup: 'rounded-4' }
+                }).then((result) => {
+                    if (result.isConfirmed) window.location.href = urlDestino;
+                });
+            });
+        });
+
+        document.querySelectorAll('.btn-approve').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const urlDestino = this.getAttribute('href');
+                Swal.fire({
+                    title: '¿Aprobar reporte?', text: "La bicicleta será visible públicamente para toda la comunidad.", icon: 'question',
+                    showCancelButton: true, confirmButtonColor: '#ffc107', cancelButtonColor: '#333333', confirmButtonText: '<span style="color:black">Sí, aprobar</span>', cancelButtonText: 'Revisar más tarde', background: '#111111', color: '#ffffff', customClass: { popup: 'rounded-4' }
+                }).then((result) => {
+                    if (result.isConfirmed) window.location.href = urlDestino;
+                });
+            });
+        });
+
+        document.querySelectorAll('.btn-found').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const urlDestino = this.getAttribute('href');
+                Swal.fire({
+                    title: '¿Bicicleta Recuperada?', text: "¡Felicidades! Al confirmar, el estado cambiará a RECUPERADA y todos sabrán la buena noticia.", icon: 'success',
+                    showCancelButton: true, confirmButtonColor: '#198754', cancelButtonColor: '#6c757d', confirmButtonText: 'Sí, ya la tengo', cancelButtonText: 'Aún no', customClass: { popup: 'rounded-4' }
+                }).then((result) => {
+                    if (result.isConfirmed) window.location.href = urlDestino;
+                });
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

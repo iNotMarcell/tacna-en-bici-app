@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editar Reporte - Tacna en Bici</title>
+  <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f5f7fa; color: #111; }
+    .dark-header { background-color: #111111; padding-top: 140px; padding-bottom: 90px; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; color: #ffffff; margin-bottom: -60px; text-align: center; }
+    .card-widget { background-color: #ffffff; border: 1px solid #eaedf2; border-radius: 32px; padding: 50px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); margin-bottom: 60px; position: relative; z-index: 10; max-width: 900px; margin-left: auto; margin-right: auto; }
+    .form-control, .form-select { border-radius: 14px; padding: 14px 20px; border: 1px solid #eaedf2; background-color: #f8f9fa; font-size: 0.95rem; }
+    .form-control:focus, .form-select:focus { box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.15); border-color: #111; background-color: #fff; }
+    .form-label { font-weight: 700; color: #555; font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    .btn-black-custom { background-color: #111111; border-color: #111111; color: #ffffff; transition: all 0.3s ease; }
+    .btn-black-custom:hover { background-color: #333333 !important; border-color: #333333 !important; color: #ffffff !important; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="dark-header">
+  <div class="container">
+    <span class="badge bg-danger rounded-pill px-3 py-2 mb-3 fw-bold" style="letter-spacing: 1px;">MODIFICACIÓN DE DATOS</span>
+    <h1 class="display-5 fw-bold mb-2">Editar Reporte de Bicicleta</h1>
+    <p class="text-white text-opacity-75 fs-5">Actualiza la información de tu reporte para mantener los datos precisos.</p>
+  </div>
+</div>
+
+<div class="container px-4 px-xl-5">
+  <div class="card-widget">
+
+    <form th:action="@{/bicicletas/guardar}" th:object="${bicicleta}" method="post" enctype="multipart/form-data">
+
+      <!-- ID Oculto para que sepa que es una edición -->
+      <input type="hidden" th:field="*{id}">
+
+      <h4 class="fw-bold mb-4 pb-2 border-bottom d-flex align-items-center gap-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="14.31" y1="8" x2="20.05" y2="17.94"></line><line x1="9.69" y1="8" x2="21.17" y2="8"></line></svg>
+        Detalles de la Bicicleta
+      </h4>
+
+      <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Marca</label>
+          <input type="text" class="form-control" th:field="*{marca}" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Modelo</label>
+          <input type="text" class="form-control" th:field="*{modelo}" required>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Color Principal</label>
+          <input type="text" class="form-control" th:field="*{color}" required>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Tipo de Bicicleta</label>
+          <select class="form-select" th:field="*{tipo}" required>
+            <option value="Montaña (MTB)">Montaña (MTB)</option>
+            <option value="Ruta / Carretera">Ruta / Carretera</option>
+            <option value="Urbana / Paseo">Urbana / Paseo</option>
+            <option value="BMX">BMX</option>
+            <option value="Eléctrica">Eléctrica</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Número de Serie</label>
+          <input type="text" class="form-control font-monospace" th:field="*{numeroSerie}">
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Descripción General</label>
+        <textarea rows="3" class="form-control" th:field="*{descripcion}"></textarea>
+      </div>
+
+      <div class="mb-5">
+        <label class="form-label">Características Particulares (Marcas, Rasguños)</label>
+        <input type="text" class="form-control" th:field="*{caracteristicasParticulares}">
+      </div>
+      <h4 class="fw-bold mb-4 pb-2 border-bottom d-flex align-items-center gap-2 mt-5">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        Detalles del Incidente
+      </h4>
+
+      <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Fecha del Robo</label>
+          <input type="date" class="form-control" id="fechaRobo" name="fechaRobo"
+                 th:value="*{fechaRobo != null ? #temporals.format(fechaRobo, 'yyyy-MM-dd') : ''}" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Lugar Específico del Robo</label>
+          <input type="text" class="form-control" th:field="*{lugarRobo}" placeholder="Ej. Parque principal">
+        </div>
+      </div>
+
+      <h4 class="fw-bold mb-4 pb-2 border-bottom d-flex align-items-center gap-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        Actualizar Imágenes (Opcional)
+      </h4>
+
+      <div class="row g-3 mb-5">
+        <div class="col-md-6">
+          <label class="form-label">Imagen Principal (General)</label>
+          <input type="file" class="form-control" name="imagen" accept="image/*">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Detalle 1 (Timón / Frenos)</label>
+          <input type="file" class="form-control" name="imagen2" accept="image/*">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Detalle 2 (Llantas / Cuadro)</label>
+          <input type="file" class="form-control" name="imagen3" accept="image/*">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Detalle 3 (Señas particulares)</label>
+          <input type="file" class="form-control" name="imagen4" accept="image/*">
+        </div>
+      </div>
+
+      <div class="d-flex gap-3 justify-content-end">
+        <a th:href="@{/bicicletas}" class="btn btn-light border rounded-pill px-4 py-3 fw-semibold">Cancelar</a>
+        <button type="submit" class="btn btn-black-custom rounded-pill px-5 py-3 fw-bold">Guardar Cambios</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const today = new Date().toISOString().split('T')[0];
+
+    const inputFecha = document.getElementById('fechaRobo');
+    if(inputFecha) {
+      inputFecha.setAttribute('max', today);
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const navbar = document.querySelector('.navbar-pill');
+
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 300) {
+        navbar.classList.add('scrolled-nav');
+      } else {
+        navbar.classList.remove('scrolled-nav');
+      }
+    });
+  });
+</script>
+</body>
+</html>

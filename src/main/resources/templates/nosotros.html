@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nosotros - Tacna en Bici</title>
+  <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+
+  <style>
+    body {
+      background-color: #f4f4f5;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    .hero-section {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background-color: #111;
+    }
+    .hero-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translateX(-50%) translateY(-50%);
+      object-fit: cover;
+      z-index: 1;
+      opacity: 0.6;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.9) 100%);
+      z-index: 2;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      color: #ffffff;
+      padding: 0 20px;
+    }
+    .hero-title {
+      font-size: clamp(3rem, 6vw, 6rem);
+      font-weight: 800;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+      line-height: 1;
+    }
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0.7;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+      40% { transform: translateY(-15px) translateX(-50%); }
+      60% { transform: translateY(-7px) translateX(-50%); }
+    }
+
+    .about-section { padding: 120px 0; background-color: #f4f4f5; }
+    .about-section.dark { background-color: #111111; color: #ffffff; }
+    .about-section.white { background-color: #ffffff; }
+
+    .huge-text {
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -1px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    .value-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 40px;
+      height: 100%;
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .value-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+    }
+    .value-icon {
+      width: 60px;
+      height: 60px;
+      background: #f4f4f5;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      color: #111;
+    }
+
+    .social-card {
+      border-radius: 32px;
+      padding: 40px;
+      height: 100%;
+      color: #ffffff;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    .social-card:hover { transform: scale(0.98); color: #ffffff; }
+
+    .social-fb { background: linear-gradient(135deg, #1877F2 0%, #0c59c0 100%); }
+    .social-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+
+    .review-bubble {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 15px;
+    }
+    .review-bubble.small { padding: 12px 20px; }
+    .star-rating { color: #FFD700; margin-bottom: 8px; font-size: 0.9rem; }
+
+    .reveal-element {
+      opacity: 0;
+      transform: translateY(60px);
+      transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: opacity, transform;
+    }
+    .reveal-element.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .delay-100 { transition-delay: 0.1s; }
+    .delay-200 { transition-delay: 0.2s; }
+    .delay-300 { transition-delay: 0.3s; }
+  </style>
+</head>
+<body>
+
+<div style="position: absolute; width: 100%; z-index: 1000;">
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+</div>
+
+<!-- 1. HERO VIDEO -->
+<section class="hero-section">
+  <video autoplay muted loop playsinline class="hero-video">
+    <source th:src="@{/video/intro.mp4}" type="video/mp4">
+    Tu navegador no soporta videos.
+  </video>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <h1 class="hero-title reveal-element is-visible">Nuestra Historia.</h1>
+    <p class="hero-subtitle reveal-element is-visible delay-200">Tacna en Bici</p>
+  </div>
+
+  <div class="scroll-indicator">
+    <span class="mb-2" style="font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;">Descubrir</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+  </div>
+</section>
+
+<!-- 2. RESEÑA HISTÓRICA -->
+<section class="about-section text-center">
+  <div class="container px-4">
+    <span class="section-label reveal-element">Reseña Histórica</span>
+    <h2 class="huge-text text-dark reveal-element delay-100">
+      Nacimos con una misión clara: <span style="color: #666;">unir a la comunidad ciclista de Tacna.</span>TacnaEnBici es una Asociación de voluntarios, profesionales y líderes de clubes deportivos cuya finalidad es difundir el uso de la bicicleta como deporte y como parte de la solución a los problemas del transporte urbano en la ciudad.
+    </h2>
+  </div>
+</section>
+
+<!-- 3. MISIÓN Y VISIÓN -->
+<section class="about-section white">
+  <div class="container px-4">
+    <div class="row g-5 align-items-center">
+      <div class="col-md-6 reveal-element">
+        <span class="section-label">Nuestra Misión</span>
+        <h3 class="fw-bold fs-1 mb-4">Proteger y Promover</h3>
+        <p class="text-secondary" style="font-size: 1.15rem; line-height: 1.8;">
+          Fomentar el uso seguro y responsable de la bicicleta en la ciudad de Tacna, creando herramientas tecnológicas, redes de apoyo y bases de datos públicas que permitan combatir los robos y recuperar nuestros vehículos con la fuerza de la comunidad.
+        </p>
+      </div>
+      <div class="col-md-6 reveal-element delay-100">
+        <span class="section-label">Nuestra Visión</span>
+        <h3 class="fw-bold fs-1 mb-4">Una Ciudad Sostenible</h3>
+        <p class="text-secondary" style="font-size: 1.15rem; line-height: 1.8;">
+          Consolidarnos como la organización líder y el principal referente de movilidad sostenible en el sur del país, logrando que Tacna sea reconocida como una ciudad segura, transitable y amigable para todos los ciclistas.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. PRINCIPIOS Y VALORES -->
+<section class="about-section">
+  <div class="container px-4">
+    <div class="text-center mb-5">
+      <span class="section-label reveal-element">Principios y Valores</span>
+      <h2 class="fw-bold fs-1 reveal-element delay-100">Lo que nos mueve</h2>
+    </div>
+
+    <div class="row g-4 mt-4">
+      <div class="col-md-6 col-lg-3 reveal-element">
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <h4 class="fw-bold fs-4 mb-3">Comunidad</h4>
+          <p class="text-secondary m-0">Creemos que juntos somos más fuertes. El apoyo mutuo es nuestra principal herramienta.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 reveal-element delay-100">
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <h4 class="fw-bold fs-4 mb-3">Seguridad</h4>
+          <p class="text-secondary m-0">Trabajamos incansablemente para garantizar espacios y recorridos libres de riesgos.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 reveal-element delay-200">
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 5 18 3-9h5"></path></svg>
+          </div>
+          <h4 class="fw-bold fs-4 mb-3">Acción</h4>
+          <p class="text-secondary m-0">No nos quedamos en palabras; desarrollamos soluciones tecnológicas y operativas reales.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 reveal-element delay-300">
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+          </div>
+          <h4 class="fw-bold fs-4 mb-3">Sostenibilidad</h4>
+          <p class="text-secondary m-0">Promovemos la bicicleta no solo como deporte, sino como el futuro del transporte limpio.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. TRANSPARENCIA E INSTITUCIONALIDAD -->
+<section class="about-section dark text-center">
+  <div class="container px-4">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" class="mb-4 reveal-element"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    <span class="section-label text-white text-opacity-50 reveal-element delay-100">Transparencia e Institucionalidad</span>
+    <h2 class="huge-text reveal-element delay-200" style="font-size: clamp(1.8rem, 3vw, 2.8rem);">
+      Somos una organización civil comprometida con las buenas prácticas, la protección de datos personales y la información abierta al servicio exclusivo de la ciudadanía.
+    </h2>
+  </div>
+</section>
+
+<!-- 6. REDES SOCIALES Y RESEÑAS -->
+<section class="about-section white">
+  <div class="container px-4">
+    <div class="row g-4">
+
+      <div class="col-lg-7 reveal-element">
+        <a href="https://www.facebook.com/TacnaenBici" target="_blank" class="social-card social-fb">
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center gap-3">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              <div>
+                <h3 class="fw-bold m-0 fs-4">Comunidad en Facebook</h3>
+                <p class="m-0 text-white text-opacity-75" style="font-size: 0.9rem;">Más de 6,300 seguidores</p>
+              </div>
+            </div>
+            <div class="text-end d-none d-sm-block">
+              <div class="fw-bold">Recomendado por el 90%</div>
+              <div class="star-rating">★★★★★</div>
+            </div>
+          </div>
+
+          <!-- Reseña 1 -->
+          <div class="review-bubble">
+            <div class="fw-bold d-flex align-items-center gap-2 mb-1">
+              <div style="width: 24px; height: 24px; background: #fff; border-radius: 50%; color: #1877F2; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">ND</div>
+              Natalia Delgado
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <p class="m-0 text-white text-opacity-75" style="font-size: 0.95rem;">"Adoro este grupo! Se siente la pasión por lo que hacen. 💪🏼"</p>
+          </div>
+
+          <!-- Reseña 2 -->
+          <div class="review-bubble">
+            <div class="fw-bold d-flex align-items-center gap-2 mb-1">
+              <div style="width: 24px; height: 24px; background: #fff; border-radius: 50%; color: #1877F2; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">ZC</div>
+              Zonaden Cordova
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <p class="m-0 text-white text-opacity-75" style="font-size: 0.95rem;">"Excelente grupo de personas emprendedoras. Sigan promoviendo el deporte que mucho ayuda a esta ciudad."</p>
+          </div>
+
+          <!-- Reseña 3 -->
+          <div class="review-bubble small d-flex align-items-center gap-3">
+            <div class="fw-bold" style="font-size: 0.85rem;">Cristhiam Pereira Huaylla</div>
+            <p class="m-0 text-white text-opacity-75" style="font-size: 0.85rem;">"Bien ahi chicos :)"</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- TARJETA INSTAGRAM -->
+      <div class="col-lg-5 reveal-element delay-100">
+        <a href="https://www.instagram.com/Tacnaenbici1?fbclid=IwY2xjawTgSkJleHRuA2FlbQIxMABicmlkETE1b1hwTlc3YkxUY3ppRTQ0c3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHkBU2HYPhRr0W_elf26RTuJApI-DAkhpAclr_qtMwWuqwR7lakUM2SQYHOkU_aem_3BiofsSrmGXtiPTZozHBVg" target="_blank" class="social-card social-ig text-center justify-content-center align-items-center">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          <h3 class="fw-bold fs-2 mb-2">Síguenos en Instagram</h3>
+          <p class="text-white text-opacity-75 m-0" style="font-size: 1.1rem;">@Tacnaenbici1</p>
+
+          <div class="mt-4 px-4 py-2" style="background: rgba(255,255,255,0.2); border-radius: 50px; backdrop-filter: blur(5px);">
+            Únete a la conversación visual
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SCRIPT DE ANIMACIÓN OPTIMIZADA -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.15
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll('.reveal-element');
+    revealElements.forEach(el => {
+      observer.observe(el);
+    });
+  });
+
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const navbar = document.querySelector('.navbar-pill');
+
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 850) {
+        navbar.classList.add('scrolled-nav');
+      } else {
+        navbar.classList.remove('scrolled-nav');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

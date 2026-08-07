@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalle de Reporte - Tacna en Bici</title>
+    <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body { background-color: #f4f4f5; font-family: 'Inter', sans-serif; }
+
+        .dark-header {
+            background-color: #111111;
+            padding-top: 140px;
+            padding-bottom: 80px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            color: #ffffff;
+            margin-bottom: 40px;
+        }
+
+        .detail-wrapper {
+            max-width: 1000px;
+            margin: -80px auto 60px auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .alert-custom {
+            border-radius: 24px;
+            padding: 24px 32px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .alert-robada { background-color: #fce8e8; color: #dc3545; }
+        .alert-recuperada { background-color: #e6f4ea; color: #198754; }
+
+        .content-card {
+            background-color: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            padding: 40px;
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+
+        .bike-image-container {
+            width: 100%;
+            height: 450px;
+            border-radius: 24px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .bike-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .data-label {
+            font-size: 0.75rem;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .data-value {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #111111;
+            margin-bottom: 24px;
+        }
+
+        .avistamiento-item {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #eaedf2;
+            transition: transform 0.2s;
+        }
+        .avistamiento-item:hover { transform: translateX(5px); }
+
+        @keyframes smoothFadeUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .css-animate-entry {
+            opacity: 0;
+            animation: smoothFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Header Oscuro -->
+<div class="dark-header text-center">
+    <div class="container">
+        <span class="badge border border-secondary text-white text-opacity-75 rounded-pill px-3 py-2 mb-3" style="letter-spacing: 1px; font-weight: 500;">
+            BASE DE DATOS DE REPORTES
+        </span>
+
+        <h1 class="display-5 fw-bold mb-3">
+            Detalle de Reporte <span th:if="${bicicleta != null}">#<span th:text="${bicicleta.id}"></span></span>
+        </h1>
+        <p class="text-white text-opacity-75 fs-5">Toda la información técnica y de registro de esta bicicleta.</p>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- ESTADO 1: REPORTE NO ENCONTRADO O NULO -->
+<!-- ========================================== -->
+<div class="container px-3 detail-wrapper css-animate-entry" th:if="${bicicleta == null}">
+    <div class="content-card text-center py-5">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="1.5" class="mb-4"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        <h3 class="fw-bold text-dark mb-2">Reporte no disponible</h3>
+        <p class="text-secondary mb-4">Lo sentimos, la bicicleta que intentas buscar no existe, el ID es incorrecto o el reporte fue eliminado.</p>
+        <a th:href="@{/bicicletas}" class="btn btn-dark rounded-pill px-4 fw-medium">Volver al Directorio</a>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- ESTADO 2: REPORTE ENCONTRADO CORRECTAMENTE -->
+<!-- ========================================== -->
+<div class="container px-3 detail-wrapper" th:if="${bicicleta != null}">
+
+    <!-- Alerta de Estado -->
+    <div th:if="${bicicleta.estado != null and #strings.toUpperCase(#strings.toString(bicicleta.estado)) == 'ROBADA'}" class="alert-custom alert-robada mb-4 css-animate-entry" style="animation-delay: 0.1s;">
+        <div class="d-flex align-items-center gap-3">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <div>
+                <h5 class="fw-bold m-0 mb-1">Bicicleta reportada como robada</h5>
+                <p class="m-0 text-dark text-opacity-75" style="font-size: 0.9rem;">Ayuda a localizarla compartiendo la información o registrando un avistamiento si la has visto.</p>
+            </div>
+        </div>
+        <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold">ROBADA</span>
+    </div>
+
+    <div th:if="${bicicleta.estado != null and #strings.toUpperCase(#strings.toString(bicicleta.estado)) == 'RECUPERADA'}" class="alert-custom alert-recuperada mb-4 css-animate-entry" style="animation-delay: 0.1s;">
+        <div class="d-flex align-items-center gap-3">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <div>
+                <h5 class="fw-bold m-0 mb-1">¡Esta bicicleta fue recuperada!</h5>
+                <p class="m-0 text-dark text-opacity-75" style="font-size: 0.9rem;">Gracias al esfuerzo de la comunidad y las autoridades, esta bicicleta volvió a su dueño.</p>
+            </div>
+        </div>
+        <span class="badge bg-success rounded-pill px-3 py-2 fw-bold">RECUPERADA</span>
+    </div>
+
+    <!-- TARJETA 1: FICHA TÉCNICA PRINCIPAL -->
+    <div class="content-card css-animate-entry" style="animation-delay: 0.2s;">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-4">
+            <h3 class="fw-bold m-0 fs-4">Ficha Técnica Completa</h3>
+            <span th:if="${bicicleta.estadoAprobacion == 'APROBADA'}" class="badge bg-dark rounded-pill px-3 py-2 fw-medium">REPORTE APROBADO</span>
+            <span th:if="${bicicleta.estadoAprobacion == 'PENDIENTE'}" class="badge bg-warning text-dark rounded-pill px-3 py-2 fw-medium">EN REVISIÓN</span>
+        </div>
+
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div id="carruselBici" class="carousel slide bike-image-container" data-bs-ride="carousel">
+                    <div class="carousel-inner h-100">
+                        <div class="carousel-item active h-100">
+                            <img th:if="${bicicleta.foto != null}" th:src="|data:image/jpeg;base64,${bicicleta.foto}|" class="bike-image d-block w-100" alt="Foto General">
+                            <img th:unless="${bicicleta.foto != null}" th:src="@{/img/sin-imagen.png}" class="bike-image d-block w-100" alt="Sin foto">
+                        </div>
+                        <div class="carousel-item h-100" th:if="${bicicleta.foto2 != null}">
+                            <img th:src="|data:image/jpeg;base64,${bicicleta.foto2}|" class="bike-image d-block w-100" alt="Detalle 1">
+                        </div>
+                        <div class="carousel-item h-100" th:if="${bicicleta.foto3 != null}">
+                            <img th:src="|data:image/jpeg;base64,${bicicleta.foto3}|" class="bike-image d-block w-100" alt="Detalle 2">
+                        </div>
+                        <div class="carousel-item h-100" th:if="${bicicleta.foto4 != null}">
+                            <img th:src="|data:image/jpeg;base64,${bicicleta.foto4}|" class="bike-image d-block w-100" alt="Detalle 3">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carruselBici" data-bs-slide="prev" th:if="${bicicleta.foto2 != null}">
+                        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carruselBici" data-bs-slide="next" th:if="${bicicleta.foto2 != null}">
+                        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+
+                <h5 class="fw-bold mb-3 fs-6 d-flex align-items-center gap-2 text-dark">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="14.31" y1="8" x2="20.05" y2="17.94"></line><line x1="9.69" y1="8" x2="21.17" y2="8"></line><line x1="7.38" y1="12" x2="13.12" y2="2.06"></line><line x1="9.69" y1="16" x2="3.95" y2="6.06"></line><line x1="14.31" y1="16" x2="2.83" y2="16"></line><line x1="16.62" y1="12" x2="10.88" y2="21.94"></line></svg>
+                    Datos del Vehículo
+                </h5>
+                <div class="row mb-4">
+                    <div class="col-6"><div class="data-label">Marca</div><div class="data-value" th:text="${bicicleta.marca}"></div></div>
+                    <div class="col-6"><div class="data-label">Modelo</div><div class="data-value" th:text="${bicicleta.modelo}"></div></div>
+                    <div class="col-6"><div class="data-label">Tipo</div><div class="data-value" th:text="${bicicleta.tipo}"></div></div>
+                    <div class="col-6"><div class="data-label">Color Principal</div><div class="data-value"><span th:text="${bicicleta.color}"></span></div></div>
+                    <div class="col-12"><div class="data-label">Número de Serie (Chasis)</div><div class="data-value font-monospace" th:text="${bicicleta.numeroSerie != null and bicicleta.numeroSerie != '' ? bicicleta.numeroSerie : 'No registrado'}"></div></div>
+                    <div class="col-12"><div class="data-label">Características Particulares</div><div class="data-value" th:text="${bicicleta.caracteristicasParticulares != null and bicicleta.caracteristicasParticulares != '' ? bicicleta.caracteristicasParticulares : 'Ninguna registrada'}"></div></div>
+                    <div class="col-12"><div class="data-label">Descripción General</div><div class="data-value text-secondary" style="font-size: 0.95rem; line-height: 1.6;" th:text="${bicicleta.descripcion != null and bicicleta.descripcion != '' ? bicicleta.descripcion : 'Sin descripción.'}"></div></div>
+                </div>
+
+                <!-- Sección: Detalles del Incidente -->
+                <h5 class="fw-bold mb-3 fs-6 d-flex align-items-center gap-2 text-dark border-top pt-4">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    Detalles del Incidente
+                </h5>
+                <div class="row">
+                    <div class="col-6"><div class="data-label">Fecha del Robo</div><div class="data-value" th:text="${bicicleta.fechaRobo != null ? #temporals.format(bicicleta.fechaRobo, 'dd MMM yyyy') : 'No especificada'}"></div></div>
+                    <div class="col-6"><div class="data-label">Ubicación General</div><div class="data-value"><span th:text="${bicicleta.distrito}"></span><span th:if="${bicicleta.provincia != null}" th:text="${', ' + bicicleta.provincia}"></span></div></div>
+                    <div class="col-12"><div class="data-label">Lugar Específico</div><div class="data-value" th:text="${bicicleta.lugarRobo != null and bicicleta.lugarRobo != '' ? bicicleta.lugarRobo : 'No registrado'}"></div></div>
+                    <div class="col-12"><div class="data-label">¿Cuenta con denuncia policial?</div>
+                        <div class="data-value">
+                            <span th:if="${bicicleta.denunciaPolicial == true}" class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-1">Sí, registrada</span>
+                            <span th:if="${bicicleta.denunciaPolicial == false or bicicleta.denunciaPolicial == null}" class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-3 py-1">No registrada</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Botones de Acción Múltiple -->
+        <div class="d-flex flex-wrap gap-3 justify-content-end mt-5 pt-4 border-top">
+            <a th:href="@{/bicicletas}" class="btn btn-light rounded-pill px-4 fw-medium border">
+                Volver al Directorio
+            </a>
+
+            <!-- Botón Editar -->
+            <a th:if="${usuarioLogueado != null and bicicleta.usuario != null and (usuarioLogueado.id == bicicleta.usuario.id or #strings.toString(usuarioLogueado.rol) == 'ADMIN' or #strings.toString(usuarioLogueado.rol) == 'ROLE_ADMIN')}"
+               th:href="@{'/bicicletas/editar/' + ${bicicleta.id}}"
+               class="btn btn-outline-dark rounded-pill px-4 fw-medium d-flex align-items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Editar Reporte
+            </a>
+
+            <!-- Botón Registrar Avistamiento (OPCIÓN A: Usuario NO logueado) -->
+            <!-- Si usuarioLogueado es null, lo manda a /login -->
+            <a th:if="${usuarioLogueado == null and bicicleta.estado != null and #strings.toUpperCase(#strings.toString(bicicleta.estado)) == 'ROBADA'}"
+               th:href="@{/login}"
+               class="btn btn-dark rounded-pill px-4 fw-medium d-flex align-items-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Registrar Avistamiento
+            </a>
+
+            <!-- Botón Registrar Avistamiento (OPCIÓN B: Usuario SÍ logueado) -->
+            <!-- Si usuarioLogueado NO es null, lo manda a registrar el avistamiento real -->
+            <a th:if="${usuarioLogueado != null and bicicleta.estado != null and #strings.toUpperCase(#strings.toString(bicicleta.estado)) == 'ROBADA'}"
+               th:href="@{'/avistamientos/nuevo/' + ${bicicleta.id}}"
+               class="btn btn-dark rounded-pill px-4 fw-medium d-flex align-items-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Registrar Avistamiento
+            </a>
+        </div>
+        </div>
+
+    </div>
+
+    <!-- TARJETA 2: SECCIÓN DE AVISTAMIENTOS -->
+    <div class="content-card css-animate-entry" style="animation-delay: 0.3s;">
+        <h3 class="fw-bold m-0 fs-4 mb-4 d-flex align-items-center gap-2">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            Historial de Avistamientos
+        </h3>
+
+        <!-- Estado vacío si no hay avistamientos -->
+        <div th:if="${avistamientos == null or #lists.isEmpty(avistamientos)}" class="text-center py-5 bg-light rounded-4 border" style="border-style: dashed !important;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" stroke-width="1.5" class="mb-3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <h5 class="fw-bold text-secondary mb-1">Sin avistamientos registrados</h5>
+            <p class="text-secondary mb-0" style="font-size: 0.9rem;">Aún nadie ha reportado haber visto esta bicicleta.</p>
+        </div>
+
+        <!-- Lista de avistamientos si existen -->
+        <div th:unless="${avistamientos == null or #lists.isEmpty(avistamientos)}">
+            <div th:each="avistamiento : ${avistamientos}" class="avistamiento-item">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="fw-bold text-dark d-flex align-items-center gap-2">
+                        <span class="badge bg-dark rounded-circle p-1"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+
+                        <!-- CORRECCIÓN AQUÍ: Quitamos la dependencia de avistamiento.usuario -->
+                        <span>Miembro de la Comunidad</span>
+
+                    </div>
+                    <span class="badge bg-light text-secondary border" th:text="${avistamiento.fecha + ' - ' + avistamiento.hora}">Fecha</span>
+                </div>
+
+                <p class="mb-3 mt-3 text-dark" th:text="${avistamiento.descripcion}">Descripción</p>
+
+                <!-- Imágenes del avistamiento -->
+                <div class="row g-2 mb-3" th:if="${avistamiento.foto != null or avistamiento.foto2 != null}">
+                    <div class="col-6" th:if="${avistamiento.foto != null}">
+                        <img th:src="|data:image/jpeg;base64,${avistamiento.foto}|" class="img-fluid rounded-3 w-100" style="height: 140px; object-fit: cover;" alt="Evidencia 1">
+                    </div>
+                    <div class="col-6" th:if="${avistamiento.foto2 != null}">
+                        <img th:src="|data:image/jpeg;base64,${avistamiento.foto2}|" class="img-fluid rounded-3 w-100" style="height: 140px; object-fit: cover;" alt="Evidencia 2">
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mt-2 text-secondary" style="font-size: 0.85rem;" th:if="${avistamiento.direccion != null and avistamiento.direccion != ''}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <strong>Visto por:</strong> <span th:text="${avistamiento.direccion}">Dirección</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}" class="css-animate-entry" style="animation-delay: 0.4s;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const navbar = document.querySelector('.navbar-pill');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 150) {
+                navbar.classList.add('scrolled-nav');
+            } else {
+                navbar.classList.remove('scrolled-nav');
+            }
+        });
+    });
+</script>
+</body>
+</html>

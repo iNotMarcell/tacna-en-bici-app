@@ -1,0 +1,85 @@
+<div th:fragment="navbar">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <div class="pill-nav-container" style="position: fixed; top: 20px; left: 0; width: 100%; z-index: 1050; display: flex; justify-content: center; pointer-events: none;">
+
+        <nav class="navbar navbar-expand-lg navbar-light navbar-pill" style="pointer-events: auto;">
+            <div class="container-fluid px-2">
+                <a class="navbar-brand d-flex align-items-center text-nowrap" th:href="@{/}">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                        <circle cx="5.5" cy="17.5" r="3.5"></circle>
+                        <circle cx="18.5" cy="17.5" r="3.5"></circle>
+                        <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2"></path>
+                    </svg>
+                    TACNA EN BICI
+                </a>
+
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                    <ul class="navbar-nav gap-2 gap-lg-2">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/}">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/nosotros}">Nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-nowrap" th:href="@{/bicicletas}">Alerta Bici</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center gap-1" th:href="@{/mapa}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+                                Mapa
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/eventos}">Noticias</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/servicios}">Servicios</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="d-none d-lg-flex align-items-center gap-2 ms-lg-3">
+
+                    <a th:if="${usuarioLogueado != null and #strings.toString(usuarioLogueado.rol) == 'ADMIN'}"
+                       class="nav-btn-outline text-nowrap"
+                       th:href="@{/admin/panel}">
+                        Panel Admin
+                    </a>
+
+                    <a th:unless="${usuarioLogueado != null and #strings.toString(usuarioLogueado.rol) == 'ADMIN'}"
+                       class="nav-btn-outline text-nowrap"
+                       th:href="${usuarioLogueado != null ? '/bicicletas/nuevo' : '/login'}">
+                        Reportar Robo
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <a th:if="${usuarioLogueado == null}"
+       class="d-none d-md-flex position-fixed shadow-sm"
+       style="top: 20px; right: 24px; z-index: 1050; padding: 15px 28px; height: 61px; border-radius: 50px; background-color: rgba(33, 37, 41, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); align-items: center; gap: 8px; color: #ffffff; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: all 0.3s ease; box-sizing: border-box;"
+       th:href="@{/login}"
+       onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.1)'; this.style.borderColor='rgba(255, 255, 255, 0.2)';"
+       onmouseout="this.style.backgroundColor='rgba(33, 37, 41, 0.95)'; this.style.borderColor='rgba(255, 255, 255, 0.05)';">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span class="text-nowrap">Iniciar Sesión</span>
+    </a>
+
+    <a th:if="${usuarioLogueado != null}"
+       class="d-none d-md-flex position-fixed shadow-sm"
+       style="top: 20px; right: 24px; z-index: 1050; padding: 15px 28px; height: 61px; border-radius: 50px; background-color: rgba(33, 37, 41, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); align-items: center; gap: 8px; color: #ffffff; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: all 0.3s ease; box-sizing: border-box;"
+       th:href="@{/logout}"
+       onclick="event.preventDefault(); let url = this.href; Swal.fire({title: '¿Cerrar sesión?', text: '¿Estás seguro de que deseas salir?', icon: 'question', showCancelButton: true, confirmButtonColor: '#111111', cancelButtonColor: '#6c757d', confirmButtonText: 'Sí, salir', cancelButtonText: 'Cancelar', customClass: { popup: 'rounded-4' }}).then((result) => { if (result.isConfirmed) window.location.href = url; });"
+       onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.1)'; this.style.borderColor='rgba(255, 255, 255, 0.2)';"
+       onmouseout="this.style.backgroundColor='rgba(33, 37, 41, 0.95)'; this.style.borderColor='rgba(255, 255, 255, 0.05)';">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span class="text-nowrap">Cerrar Sesión</span>
+    </a>
+</div>

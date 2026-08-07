@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tacna en Bici - Estadísticas</title>
+  <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+
+  <style>
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      padding-bottom: 40px;
+    }
+
+    .kpi-card {
+      background-color: #ffffff;
+      border: 1px solid #eaedf2;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .kpi-title { font-size: 0.85rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .kpi-value { font-size: 2.2rem; font-weight: 800; color: #111; margin-bottom: 0; line-height: 1; }
+
+    .chart-card {
+      background-color: #ffffff;
+      border: 1px solid #eaedf2;
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    }
+
+    .col-span-2 { grid-column: span 2; }
+    .col-span-4 { grid-column: span 4; }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .chart-title { font-size: 1.1rem; font-weight: 700; color: #111; margin: 0; }
+
+    .chart-wrapper { position: relative; height: 300px; width: 100%; }
+
+    .filter-bar { background: #fff; border: 1px solid #eaedf2; border-radius: 50px; padding: 10px 20px; display: inline-flex; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+    .filter-select { border: none; font-weight: 600; color: #555; background: transparent; outline: none; cursor: pointer; }
+
+    @media (max-width: 1200px) {
+      .bento-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .col-span-2, .col-span-4 { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-app">
+
+  <div th:replace="~{fragments/admin-sidebar :: sidebar('estadisticas')}"></div>
+
+  <main class="main-content">
+
+    <header class="top-bar flex-wrap gap-3">
+      <div>
+        <h2 class="fw-bold fs-4 mb-0">Análisis y Estadísticas</h2>
+        <p class="text-secondary small mb-0">Métricas en tiempo real sobre incidencias en la región</p>
+      </div>
+
+      <div class="filter-bar">
+        <div class="d-flex align-items-center gap-2 border-end pe-3">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <select class="filter-select">
+            <option>Todo el tiempo</option>
+            <option>Este año</option>
+            <option>Últimos 30 días</option>
+          </select>
+        </div>
+        <button class="btn btn-dark btn-sm rounded-pill px-3 fw-bold">Aplicar</button>
+      </div>
+    </header>
+
+    <div class="bento-grid">
+
+      <!-- KPIs -->
+      <div class="kpi-card">
+        <h6 class="kpi-title">Total Reportes</h6>
+        <div class="d-flex align-items-end gap-2">
+          <h2 class="kpi-value" th:text="${totalReportes}">0</h2>
+          <span class="text-secondary small fw-medium mb-1">bicicletas</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <h6 class="kpi-title">Tasa de Recuperación</h6>
+        <div class="d-flex align-items-end gap-2">
+          <h2 class="kpi-value text-success" th:text="${porcentajeRecuperacion} + '%'">0%</h2>
+          <span class="text-success small fw-medium mb-1">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                </span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <h6 class="kpi-title">Bicicletas Recuperadas</h6>
+        <div class="d-flex align-items-end gap-2">
+          <h2 class="kpi-value text-primary" th:text="${recuperadas}">0</h2>
+          <span class="text-secondary small fw-medium mb-1">casos de éxito</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <h6 class="kpi-title">Denuncias Policiales</h6>
+        <div class="d-flex align-items-end gap-2">
+          <h2 class="kpi-value text-dark" th:text="${conDenuncia}">0</h2>
+          <span class="text-secondary small fw-medium mb-1">respaldadas</span>
+        </div>
+      </div>
+
+      <!-- GRÁFICO: Incidencias por Distrito (BARRAS) -->
+      <div class="chart-card col-span-4">
+        <div class="chart-header">
+          <h3 class="chart-title">Zonas de Riesgo (Robos por Distrito)</h3>
+          <span class="badge bg-light text-dark border rounded-pill">Zonas Críticas</span>
+        </div>
+        <div class="chart-wrapper" style="height: 350px;">
+          <canvas id="distritosChart"></canvas>
+        </div>
+      </div>
+
+      <!-- GRÁFICO: Tipos de Bicicleta (DOUGHNUT) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3 class="chart-title">Tipos de Bicicleta más Afectados</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="tiposChart"></canvas>
+        </div>
+      </div>
+
+      <!-- GRÁFICO: Estado de Reportes (PIE) -->
+      <div class="chart-card col-span-2">
+        <div class="chart-header">
+          <h3 class="chart-title">Estado Global de Reportes</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="estadosChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Script para procesar los datos de Spring Boot y dibujar gráficos -->
+<script th:inline="javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#888';
+
+    const dataDistritos = /*[[${porDistrito}]]*/ {};
+    const distritosOrdenados = Object.entries(dataDistritos).sort((a, b) => b[1] - a[1]);
+    const labelsDistritos = distritosOrdenados.map(item => item[0]);
+    const valuesDistritos = distritosOrdenados.map(item => item[1]);
+
+    new Chart(document.getElementById('distritosChart'), {
+      type: 'bar',
+      data: {
+        labels: labelsDistritos,
+        datasets: [{
+          label: 'Nº de Robos',
+          data: valuesDistritos,
+          backgroundColor: '#111111',
+          borderRadius: 8,
+          barThickness: 30,
+          hoverBackgroundColor: '#dc3545'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#eaedf2', drawBorder: false }, ticks: { precision: 0 } },
+          x: { grid: { display: false, drawBorder: false } }
+        }
+      }
+    });
+
+    const dataTipos = /*[[${porTipo}]]*/ {};
+    const labelsTipos = Object.keys(dataTipos);
+    const valuesTipos = Object.values(dataTipos);
+
+    new Chart(document.getElementById('tiposChart'), {
+      type: 'doughnut',
+      data: {
+        labels: labelsTipos,
+        datasets: [{
+          data: valuesTipos,
+          backgroundColor: ['#111111', '#444444', '#777777', '#aaaaaa', '#cccccc', '#eeeeee'],
+          borderWidth: 0,
+          hoverOffset: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '75%',
+        plugins: {
+          legend: { position: 'right', labels: { usePointStyle: true, padding: 20, font: { weight: '600' } } }
+        }
+      }
+    });
+
+    const dataEstados = /*[[${porEstado}]]*/ {};
+    const labelsEstados = Object.keys(dataEstados);
+    const valuesEstados = Object.values(dataEstados);
+
+    const coloresEstados = labelsEstados.map(lbl => lbl === 'RECUPERADA' ? '#198754' : '#dc3545');
+
+    new Chart(document.getElementById('estadosChart'), {
+      type: 'pie',
+      data: {
+        labels: labelsEstados,
+        datasets: [{
+          data: valuesEstados,
+          backgroundColor: coloresEstados,
+          borderWidth: 0,
+          hoverOffset: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { weight: '600' } } }
+        }
+      }
+    });
+
+  });
+</script>
+</body>
+</html>

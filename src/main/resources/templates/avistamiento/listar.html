@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tacna en Bici - Avistamientos Reportados</title>
+    <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f5f7fa; color: #111; margin: 0; padding: 0; }
+
+        .page-header {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            padding: 120px 0 60px 0;
+            border-radius: 0 0 40px 40px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .page-title { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; color: #ffffff; margin-bottom: 15px; }
+
+        .card-widget {
+            background-color: #ffffff;
+            border: 1px solid #eaedf2;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .card-widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+        }
+
+        .badge-avistamiento {
+            background-color: rgba(253, 126, 20, 0.1);
+            color: #fd7e14;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-header">
+    <div class="container">
+        <span class="badge border border-secondary text-secondary rounded-pill px-3 py-2 mb-3 fw-normal" data-aos="fade-up">COMUNIDAD</span>
+        <h1 class="page-title" data-aos="fade-up" data-aos-delay="100">Avistamientos Reportados</h1>
+        <p class="text-white text-opacity-75 lead mx-auto" style="max-width: 600px;" data-aos="fade-up" data-aos-delay="200">
+            Historial de ubicaciones donde la comunidad ha avistado bicicletas reportadas como robadas.
+        </p>
+    </div>
+</div>
+
+<div class="container mb-5 pb-5">
+
+    <div th:if="${#lists.isEmpty(lista)}" class="text-center py-5 bg-white rounded-4 border p-5">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" stroke-width="1.5" class="mb-3">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h4 class="fw-bold text-dark mb-2">No hay avistamientos registrados</h4>
+        <p class="text-secondary mb-0">Sé el primero en reportar si ves una bicicleta sospechosa en las calles.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col" th:each="a, stat : ${lista}" data-aos="fade-up" th:data-aos-delay="${stat.index * 100}">
+            <div class="card-widget d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="badge-avistamiento">👀 AVISTAMIENTO</span>
+                    <span class="text-secondary small" th:text="${#temporals.format(a.fecha, 'dd/MM/yyyy')}">Fecha</span>
+                </div>
+
+                <h4 class="fw-bold text-dark fs-5 mb-1" th:text="${a.bicicleta.marca + ' ' + a.bicicleta.modelo}">Marca Modelo</h4>
+                <p class="text-secondary small mb-3">Color: <strong class="text-dark" th:text="${a.bicicleta.color}">Color</strong></p>
+
+                <div class="bg-light p-3 rounded-4 mb-3 flex-grow-1 border border-light">
+                    <p class="mb-1 small"><strong>Dirección:</strong> <span th:text="${a.direccion}"></span></p>
+                    <p class="mb-1 small" th:if="${a.referencia != null and !#strings.isEmpty(a.referencia)}">
+                        <strong>Ref:</strong> <span th:text="${a.referencia}"></span>
+                    </p>
+                    <p class="mb-0 small text-muted" th:text="${a.descripcion}">Descripción</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <span class="small text-muted" th:text="${'Hora: ' + a.hora}">Hora</span>
+                    <a th:href="@{'/bicicletas/' + ${a.bicicleta.id}}" class="btn btn-dark btn-sm rounded-pill px-3">
+                        Ver Bicicleta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        AOS.init({ once: true, offset: 30, duration: 800 });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tacna en Bici - Reporte de Robos</title>
+    <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-white">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-container">
+        <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+            <h1 class="hero-title">Recupera tu bici<br>es solo un servicio.</h1>
+
+            <div class="hero-stats-row mt-4">
+                <div class="avatar-group">
+                    <img src="https://i.pravatar.cc/100?img=11" alt="User">
+                    <img src="https://i.pravatar.cc/100?img=12" alt="User">
+                    <img src="https://i.pravatar.cc/100?img=13" alt="User">
+                    <img src="https://i.pravatar.cc/100?img=14" alt="User">
+                </div>
+                <div class="hero-stats-text">
+                    <strong>Red de Alerta Ciudadana</strong>
+                    <span>Ciclistas unidos en Tacna</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-light mt-5 pt-5">
+    <div class="container mt-4">
+        <div class="row mb-5 align-items-start">
+            <div class="col-lg-6">
+                <span class="badge-custom mb-4"><span class="dot"></span> PROPÓSITO</span>
+                <h2 class="display-5 fw-bold text-dark lh-sm pe-lg-5">
+                    Protegiendo nuestra comunidad, un reporte a la vez
+                </h2>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-0 pt-lg-5">
+                <p class="text-secondary fs-6 mb-0 lh-lg pe-lg-4">
+                    Tacna en Bici es una plataforma solidaria para quienes buscan reportar bicicletas robadas o extraviadas. Creemos que una comunidad informada y conectada es la mejor herramienta para prevenir robos, evitar la reventa ilegal y ayudar a que cada ciclista recupere su medio de transporte.
+                </p>
+            </div>
+        </div>
+
+        <div class="bento-grid-1 mb-5">
+            <div class="bento-item img-card shadow-sm rounded-4 position-relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                <img th:src="@{/img/img_1.png}" alt="Seguridad" class="w-100 h-100 object-fit-cover">
+                <div class="card-overlay"></div>
+                <div class="card-content-bottom">
+                    <span class="pill-blur text-white">Prevención</span>
+                </div>
+                <button class="circle-btn position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center bg-transparent border text-white rounded-circle">
+                    +
+                </button>
+            </div>
+            <div class="bento-item img-card shadow-sm rounded-4 position-relative overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                <img th:src="@{/img/img_2.png}" alt="Comunidad" class="w-100 h-100 object-fit-cover">
+                <div class="card-overlay"></div>
+                <div class="card-content-bottom">
+                    <span class="pill-blur text-white">Búsqueda</span>
+                </div>
+                <button class="circle-btn position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center bg-transparent border text-white rounded-circle">
+                    +
+                </button>
+            </div>
+            <div class="bento-item bento-large img-card shadow-sm rounded-4 position-relative overflow-hidden" data-aos="fade-up" data-aos-delay="300">
+                <img th:src="@{/img/hero.jpg}" alt="Bicicleta" class="w-100 h-100 object-fit-cover">
+                <div class="card-overlay-gradient"></div>
+                <button class="circle-btn circle-btn-light position-absolute top-0 end-0 m-4 d-flex align-items-center justify-content-center bg-white text-dark rounded-circle border-0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+                <div class="card-content-bottom w-100 p-4 p-lg-5">
+                    <h2 class="text-white display-5 fw-bold mb-3">Base de Datos Pública</h2>
+                    <p class="text-light opacity-75 mb-0 w-75 fs-6 lh-lg">
+                        Consulta nuestro registro nacional antes de comprar una bicicleta de segunda mano. Verifica números de serie, marcas y características particulares para asegurarte de no adquirir un artículo robado.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-5 pt-4 pb-5">
+            <div class="col-lg-8">
+                <h2 class="display-6 fw-bold text-dark lh-sm mb-3">
+                    Toma acción rápida: Conoce cómo registrar y buscar bicicletas en nuestro sistema
+                </h2>
+                <a th:href="@{/bicicletas}" class="text-danger text-decoration-none fw-semibold mt-2 d-inline-block">
+                    Ver Reportes Activos <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-1"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+            <div class="col-lg-4 mt-4 mt-lg-0 text-lg-end">
+                <span class="badge-custom border-0 fw-bold fs-6"><span class="dot bg-secondary"></span> ÚLTIMOS REPORTES</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-light py-5">
+    <div class="container">
+        <div class="row mb-5 align-items-end">
+            <div class="col-lg-6">
+                <span class="badge-custom mb-3"><span class="dot"></span> HERRAMIENTAS</span>
+                <h2 class="display-5 fw-bold text-dark lh-sm mb-0">
+                    Funcionalidades Clave
+                </h2>
+            </div>
+            <div class="col-lg-6 mt-3 mt-lg-0">
+                <p class="text-secondary mb-0">
+                    Una plataforma diseñada para facilitar la denuncia rápida y alertar a la comunidad ciclista de manera eficiente. Todo lo que necesitas saber antes de comprar o al sufrir un robo.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="dark-card h-100 p-4 p-lg-5">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" class="mb-4"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <h4 class="text-white fw-semibold mb-3 fs-5">Reporte Inmediato</h4>
+                    <p class="text-secondary small mb-0 lh-lg">
+                        Registra los datos de tu bicicleta robada al instante. Sube fotos, describe el lugar del incidente y el número de serie para facilitar su identificación.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="dark-card h-100 p-4 p-lg-5">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" class="mb-4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <h4 class="text-white fw-semibold mb-3 fs-5">Búsqueda Inteligente</h4>
+                    <p class="text-secondary small mb-0 lh-lg">
+                        Filtra por marca, modelo, color o distrito. Si encuentras una bicicleta sospechosa en la calle o en internet, compárala con nuestra base de datos.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="dark-card h-100 p-4 p-lg-5">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" class="mb-4"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <h4 class="text-white fw-semibold mb-3 fs-5">Red de Alertas</h4>
+                    <p class="text-secondary small mb-0 lh-lg">
+                        La comunidad se mantiene informada de las zonas con mayor incidencia. Juntos creamos un mapa seguro para transitar por la ciudad.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-2 mb-5 pb-5">
+            <div class="col-lg-7" data-aos="fade-right">
+                <div class="img-card shadow-sm rounded-4 position-relative overflow-hidden h-100 min-h-400">
+                    <img th:src="@{/img/hero.jpg}" alt="Ciclista" class="w-100 h-100 object-fit-cover" style="filter: brightness(0.8);">
+                    <div class="card-overlay-gradient"></div>
+                    <div class="card-content-bottom p-4">
+                        <div class="d-inline-flex align-items-center bg-dark bg-opacity-75 rounded-pill p-2 pe-4 backdrop-blur border border-secondary border-opacity-25">
+                            <div class="avatar-group me-3">
+                                <img src="https://i.pravatar.cc/100?img=1" alt="User">
+                                <img src="https://i.pravatar.cc/100?img=2" alt="User">
+                                <img src="https://i.pravatar.cc/100?img=3" alt="User">
+                            </div>
+                            <div>
+                                <div class="text-white fw-semibold fs-6 lh-1">Comunidad Activa</div>
+                                <div class="text-light opacity-75 small mt-1">Más de 240 reportes registrados</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="dark-card h-100 p-4 p-lg-5 position-relative overflow-hidden pattern-bg d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="badge-custom badge-custom-dark mb-4 position-relative z-1"><span class="dot bg-white"></span> COMUNIDAD</span>
+                    </div>
+
+                    <div class="position-relative z-1 mb-4 mt-auto">
+                        <h2 class="display-6 fw-bold text-white lh-sm mb-4">
+                            Únete a nuestra<br>Red de Seguridad
+                        </h2>
+                        <h4 class="text-white fw-semibold mb-2 fs-5">Cuidarnos es tarea de todos</h4>
+                        <p class="text-secondary small mb-4 lh-lg">
+                            Sé parte de nuestra red de alerta temprana y ayuda a reducir el robo de bicicletas en Tacna. Si ves algo sospechoso, repórtalo.
+                        </p>
+                        <a th:href="@{/bicicletas/nuevo}" class="btn btn-light rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center">
+                            Reportar Robo <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        once: true,
+        offset: 50,
+        duration: 800
+    });
+
+        document.addEventListener("DOMContentLoaded", function() {
+        const navbar = document.querySelector('.navbar-pill');
+
+        window.addEventListener('scroll', function() {
+        if (window.scrollY > 850) {
+        navbar.classList.add('scrolled-nav');
+    } else {
+        navbar.classList.remove('scrolled-nav');
+    }
+    });
+    });
+</script>
+</body>
+</html>

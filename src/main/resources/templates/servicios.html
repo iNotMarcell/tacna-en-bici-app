@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servicios y Negocios - Tacna en Bici</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+
+  <style>
+    body { background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: #2d2d2d; }
+    .page-header { padding-top: 140px; padding-bottom: 40px; text-align: center; }
+    .main-title { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; }
+    .business-block { margin-bottom: 100px; padding-bottom: 40px; border-bottom: 1px solid #f0f0f0; }
+    .business-block:last-child { border-bottom: none; }
+    .business-title { font-size: 3.5rem; font-weight: 600; letter-spacing: -0.03em; color: #1a1a1a; line-height: 1.1; }
+    .business-subtitle { font-size: 1.15rem; color: #6c757d; max-width: 700px; margin: 0 auto; }
+    .wide-container { width: 92%; max-width: 1400px; margin: 0 auto; }
+    .banner-image { width: 100%; height: 60vh; min-height: 400px; object-fit: cover; border-radius: 25px; margin-top: 40px; margin-bottom: 40px; }
+    .contact-info-col { color: #555555; }
+    .contact-icon { color: #cccccc; margin-bottom: 12px; }
+    .contact-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em; color: #a0a0a0; text-transform: uppercase; margin-bottom: 5px; }
+    .contact-text { font-size: 1rem; color: #333333; }
+
+    .pill-nav-container .navbar-brand, .pill-nav-container .nav-link { color: #111111 !important; font-weight: 500 !important; }
+    .pill-nav-container .nav-link:hover { color: #666666 !important; }
+    .pill-nav-container svg { stroke: #111111 !important; }
+    .pill-nav-container .nav-btn-outline { color: #111111 !important; border-color: #111111 !important; }
+    .pill-nav-container .nav-btn-outline:hover { background-color: #111111 !important; color: #ffffff !important; }
+
+    @media (max-width: 768px) {
+      .business-title { font-size: 2.2rem; }
+      .banner-image { height: 35vh; border-radius: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main>
+  <div class="page-header">
+    <h1 class="main-title">Directorio Bici-Amigable</h1>
+    <p class="text-muted">Apoya a los negocios locales que apoyan el ciclismo.</p>
+  </div>
+
+  <!-- 1. BiciCentro Tacna -->
+  <section class="business-block">
+    <div class="text-center px-3">
+      <h2 class="business-title mb-4">BiciCentro Tacna.</h2>
+      <p class="business-subtitle mb-0">Especialistas en ensamblaje y reparación mayor. Tu punto de confianza para dejar la bicicleta como nueva antes de salir a rodar.</p>
+    </div>
+    <div class="wide-container">
+      <img src="https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=2000&q=80" alt="BiciCentro" class="banner-image shadow-sm">
+    </div>
+    <div class="wide-container">
+      <div class="row text-center g-4">
+        <div class="col-6 col-md-3 contact-info-col">
+          <div class="contact-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
+          <div class="contact-label">CORREO</div>
+          <div class="contact-text">info@bicicentro.pe</div>
+        </div>
+        <div class="col-6 col-md-3 contact-info-col">
+          <div class="contact-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+          <div class="contact-label">TELÉFONO</div>
+          <div class="contact-text">+51 987 654 321</div>
+        </div>
+        <div class="col-6 col-md-3 contact-info-col">
+          <div class="contact-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
+          <div class="contact-label">OFICINA</div>
+          <div class="contact-text">Av. Bolognesi 123, Tacna</div>
+        </div>
+        <div class="col-6 col-md-3 contact-info-col">
+          <div class="contact-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+          <div class="contact-label">HORARIO</div>
+          <div class="contact-text">Lun – Sáb, 9 AM - 7 PM</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Taller BiciClínica -->
+  <section class="business-block">
+    <div class="text-center px-3">
+      <h2 class="business-title mb-4">Taller BiciClínica.</h2>
+      <p class="business-subtitle mb-0">Mantenimiento preventivo, reparación de frenos y venta de repuestos originales. Deja tu bicicleta en manos de expertos.</p>
+    </div>
+    <div class="wide-container">
+      <img th:src="@{/img/reciclo_web.jpeg}" alt="Taller BiciClínica" class="banner-image shadow-sm">
+    </div>
+    <div class="wide-container">
+      <div class="row text-center g-4">
+        <!-- (Datos existentes de BiciClínica) -->
+        <div class="col-6 col-md-3 contact-info-col"><div class="contact-label">CORREO</div><div class="contact-text">contacto@biciclinica.pe</div></div>
+        <div class="col-6 col-md-3 contact-info-col"><div class="contact-label">TELÉFONO</div><div class="contact-text">+51 987 654 321</div></div>
+        <div class="col-6 col-md-3 contact-info-col"><div class="contact-label">OFICINA</div><div class="contact-text">Calle Principal 789, Tacna</div></div>
+        <div class="col-6 col-md-3 contact-info-col"><div class="contact-label">HORARIO</div><div class="contact-text">Lun – Sáb, 8 AM - 6 PM</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Taller Rueda Rápida -->
+  <section class="business-block">
+    <div class="text-center px-3">
+      <h2 class="business-title mb-4">Taller Rueda Rápida.</h2>
+      <p class="business-subtitle mb-0">Soluciones inmediatas para ciclistas urbanos. Ajustes rápidos, parches y puesta a punto exprés para que nunca pares.</p>
+    </div>
+    <div class="wide-container">
+      <img th:src="@{/img/img-taller.jpg}" alt="Rueda Rápida" class="banner-image shadow-sm">
+    </div>
+    <div class="wide-container">
+      <div class="row text-center g-4">
+        <div class="col-6 col-md-3 contact-info-col">
+          <div class="contact-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
+          <div class="contact-label">CORREO</div>
+          <div class="contact-text">hola@ruedarapida.pe</div>
+        </div>
+        <div class="col-6 col-md-3 contact-info-col">
+          <div class="contact-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+          <div class="contact-label">TELÉFONO</div>
+          <div class="contact-text">+51 945 123 789</div>
+        </div>
+        <div class="col-6 col-md-3 contact-info-col">
+          <div class="contact-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
+          <div class="contact-label">OFICINA</div>
+          <div class="contact-text">Calle San Martín S/N, Tacna</div>
+        </div>
+        <div class="col-6 col-md-3 contact-info-col">
+          <div class="contact-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+          <div class="contact-label">HORARIO</div>
+          <div class="contact-text">Lun – Vie, 10 AM - 8 PM</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. El Pedalista Café -->
+  <section class="business-block">
+    <div class="text-center px-3">
+      <h2 class="business-title mb-4">El Pedalista Café.</h2>
+      <p class="business-subtitle mb-0">Tu café de especialidad para recargar energías antes o después de la ruta. Contamos con estacionamiento seguro y herramientas básicas gratuitas.</p>
+    </div>
+    <div class="wide-container">
+      <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="El Pedalista Café" class="banner-image shadow-sm">
+    </div>
+    <div class="wide-container">
+      <div class="row text-center g-4">
+        <!-- (Datos existentes de El Pedalista) -->
+        <div class="col-6 col-md-3 contact-info-col"><div class="contact-label">CORREO</div><div class="contact-text">hola@pedalistacafe.com</div></div>
+        <div class="col-6 col-md-3 contact-info-col"><div class="contact-label">TELÉFONO</div><div class="contact-text">+51 912 345 678</div></div>
+        <div class="col-6 col-md-3 contact-info-col"><div class="contact-label">OFICINA</div><div class="contact-text">Calle San Martín 456, Tacna</div></div>
+        <div class="col-6 col-md-3 contact-info-col"><div class="contact-label">HORARIO</div><div class="contact-text">Mar – Dom, 7 AM - 9 PM</div></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

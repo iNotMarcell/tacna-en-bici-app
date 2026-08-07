@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tacna en Bici - Panel de Administración</title>
+  <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/admin-layout.css}">
+
+  <style>
+    .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; gap: 24px; padding-bottom: 40px; }
+    .card-widget { background-color: #ffffff; border: 1px solid #eaedf2; border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+    .hero-widget { grid-column: span 2; background: linear-gradient(135deg, #111111 0%, #2a2a2a 100%); color: #ffffff; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; padding: 40px; border: none; }
+    .hero-widget::after { content: ''; position: absolute; right: -50px; bottom: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; }
+    .profile-widget { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .profile-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 4px solid #f5f7fa; }
+    .stats-widget { grid-column: span 2; }
+    .reports-widget { display: flex; flex-direction: column; }
+    .report-item { display: flex; align-items: center; gap: 15px; padding: 12px 0; border-bottom: 1px solid #eaedf2; }
+    .report-item:last-child { border-bottom: none; }
+    .report-icon { width: 40px; height: 40px; border-radius: 12px; background-color: #f5f7fa; display: flex; align-items: center; justify-content: center; color: #111; }
+    .chart-container { height: 260px; width: 100%; margin-top: 20px; position: relative; }
+
+    @media (max-width: 1100px) { .bento-grid { grid-template-columns: repeat(2, 1fr); } .hero-widget, .stats-widget { grid-column: span 2; } .profile-widget, .reports-widget { grid-column: span 1; } }
+    @media (max-width: 768px) { .bento-grid { grid-template-columns: 1fr; } .hero-widget, .stats-widget, .profile-widget, .reports-widget { grid-column: span 1; } }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-app">
+
+  <div th:replace="~{fragments/admin-sidebar :: sidebar('dashboard')}"></div>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <div>
+        <h2 class="fw-bold fs-4 mb-0">Resumen General</h2>
+        <p class="text-secondary small mb-0">Gestión y administración de la plataforma</p>
+      </div>
+
+      <div class="search-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" placeholder="Buscar reportes, usuarios o bicicletas...">
+      </div>
+    </header>
+
+    <div class="bento-grid">
+      <div class="card-widget hero-widget">
+        <h2 class="display-6 fw-bold mb-3 position-relative z-1">Control Total<br>de la Comunidad</h2>
+        <p class="text-white text-opacity-75 mb-4 w-75 position-relative z-1">
+          Desde este panel puedes aprobar reportes pendientes, analizar estadísticas de robos y gestionar la información de los usuarios registrados en Tacna.
+        </p>
+        <div class="position-relative z-1">
+          <a th:href="@{/bicicletas}" class="btn btn-light rounded-pill px-4 py-2 fw-semibold">Revisar Directorio <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-1"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+
+      <div class="card-widget profile-widget">
+        <div class="w-100 d-flex justify-content-between align-items-center mb-3">
+          <span class="fw-bold text-dark fs-6" th:text="${usuarioLogueado != null ? usuarioLogueado.nombres : 'Administrador'}"></span>
+          <span class="badge bg-dark rounded-pill">ADMIN</span>
+        </div>
+        <img src="https://www.nicepng.com/png/detail/128-1280406_view-user-icon-png-user-circle-icon-png.png" alt="Perfil" class="profile-avatar">
+        <h4 class="fw-bold fs-5 mb-1" th:text="${usuarioLogueado != null ? usuarioLogueado.nombres : 'Administrador'}"></h4>
+        <p class="text-secondary small mb-4" th:text="${usuarioLogueado != null ? usuarioLogueado.correo : 'admin@tacnaenbici.com'}"></p>
+
+        <div class="w-100 bg-light rounded-4 p-3 text-start border border-light">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-secondary small">Reportes Hoy</span>
+            <span class="fw-bold text-dark small" th:text="${reportesHoy != null ? reportesHoy : '0'}"></span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-secondary small">Recuperadas</span>
+            <span class="fw-bold text-success small" th:text="${totalRecuperadas != null ? totalRecuperadas : '0'}"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-widget stats-widget">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 class="fw-bold fs-5 mb-0">Estadísticas de Incidencias</h4>
+          <select class="form-select form-select-sm border border-light bg-light rounded-pill w-auto px-3 shadow-none">
+            <option>Últimos 7 días</option>
+          </select>
+        </div>
+
+        <div class="d-flex gap-4 mt-3">
+          <div>
+            <div class="text-secondary small mb-1">Total Reportes</div>
+            <div class="fw-bold fs-4" th:text="${totalReportes != null ? totalReportes : '0'}"></div>
+          </div>
+          <div>
+            <div class="text-secondary small mb-1">Zona Crítica</div>
+            <div class="fw-bold fs-4 text-danger" th:text="${zonaCritica != null ? zonaCritica : 'Sin datos'}"></div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="incidenciasChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card-widget reports-widget">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="fw-bold fs-5 mb-0">Últimos Registros</h4>
+          <a th:href="@{/bicicletas/nuevo}" title="Registrar nuevo reporte" class="btn btn-dark btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width:32px; height:32px; text-decoration: none;">+</a>
+        </div>
+
+        <div th:each="bici : ${ultimosReportes}" class="report-item">
+          <div class="report-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="mb-0 fw-bold fs-6" th:text="${bici.marca + ' ' + bici.modelo}"></h6>
+            <p class="text-secondary small mb-0" th:text="${bici.distrito}"></p>
+          </div>
+          <span class="badge rounded-pill fw-medium px-2 py-1" th:classappend="${bici.estadoAprobacion == 'PENDIENTE' ? 'bg-warning text-dark' : 'bg-dark text-white'}" th:text="${bici.estadoAprobacion}"></span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(ultimosReportes)}" class="text-center text-secondary small my-4">
+          No hay registros disponibles.
+        </div>
+
+        <a th:href="@{/admin/pendientes}" class="btn btn-outline-dark rounded-pill w-100 mt-4 fw-semibold">Ver todos los reportes</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+    const ctx = document.getElementById('incidenciasChart').getContext('2d');
+    const labels = /*[[${chartLabels}]]*/ ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    const data = /*[[${chartData}]]*/ [0, 0, 0, 0, 0, 0, 0];
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Robos Reportados',
+          data: data,
+          borderColor: '#111111',
+          backgroundColor: 'transparent',
+          borderWidth: 3,
+          tension: 0.4,
+          pointBackgroundColor: '#111111',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#111',
+            titleFont: { family: 'Inter', size: 13 },
+            bodyFont: { family: 'Inter', size: 14, weight: 'bold' },
+            padding: 12,
+            cornerRadius: 8,
+            displayColors: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0, color: '#888', font: { family: 'Inter', size: 12 } },
+            grid: { color: '#eaedf2', drawBorder: false }
+          },
+          x: {
+            ticks: { color: '#888', font: { family: 'Inter', size: 12 } },
+            grid: { display: false, drawBorder: false }
+          }
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

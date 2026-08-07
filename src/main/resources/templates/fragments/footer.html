@@ -1,0 +1,66 @@
+<div th:fragment="footer" class="footer-wrapper">
+    <footer class="footer-inner">
+        <div class="footer-bg-text">TACNA</div>
+
+        <div class="footer-content container-fluid px-0">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" class="me-2">
+                            <circle cx="5.5" cy="17.5" r="3.5"></circle>
+                            <circle cx="18.5" cy="17.5" r="3.5"></circle>
+                            <path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-3 11.5V14l-3-3 4-3 2 3h2"></path>
+                        </svg>
+                        <span class="text-white fw-bold fs-5 tracking-wide">TACNA EN BICI</span>
+                    </div>
+
+                    <h5 class="text-white fw-semibold fs-6 mb-3 mt-5">Suscripción de Alertas</h5>
+                    <p class="text-secondary small mb-4 w-75 lh-lg">
+                        Únete a nuestro boletín para recibir notificaciones sobre zonas de riesgo y bicicletas reportadas.
+                    </p>
+
+                    <form class="subscription-form">
+                        <input type="email" class="subscription-input" placeholder="Correo electrónico">
+                        <button type="button" class="subscription-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-lg-2 col-6">
+                    <h5 class="footer-title">Plataforma</h5>
+                    <a th:href="@{/}" class="footer-link">Inicio</a>
+                    <a th:href="@{/bicicletas}" class="footer-link">Buscar Reportes</a>
+                    <a th:href="@{/bicicletas/nuevo}" class="footer-link">Registrar Robo</a>
+                    <a href="#" class="footer-link">Bicicletas Recuperadas</a>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <h5 class="footer-title">Nuestra Comunidad</h5>
+                    <a href="#" class="footer-link">Guía de Prevención</a>
+                    <a href="#" class="footer-link">Zonas de Riesgo</a>
+                    <a href="#" class="footer-link">Consejos de Compra</a>
+                    <a href="#" class="footer-link">Testimonios</a>
+                </div>
+
+                <div class="col-lg-3">
+                    <h5 class="footer-title">Contacto de Soporte</h5>
+                    <p class="text-secondary small mb-3">tacnaenbici1@gmail.com</p>
+                    <p class="text-secondary small w-75 lh-lg">
+                        Proyecto Ciudadano para la Seguridad Ciclista<br>Tacna, Región Tacna, Perú
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-5 pt-4 border-top border-secondary border-opacity-25">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-secondary small mb-0">&copy; 2026 Tacna en Bici. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <a href="#" class="text-secondary small text-decoration-none me-3">Términos de Uso</a>
+                    <a href="#" class="text-secondary small text-decoration-none">Política de Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
