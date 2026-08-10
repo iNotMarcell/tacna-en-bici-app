@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/bicicletas", "/bicicletas/**").permitAll()
-                        .requestMatchers("/", "/login", "/usuarios/registro", "/error", "/css/**", "/img/**", "/js/**", "/mapa", "/nosotros", "/bicicletas", "/eventos", "/servicios").permitAll()
+                        .requestMatchers("/", "/login", "/usuarios/registro", "/error", "/css/**", "/img/**", "/js/**", "/mapa", "/nosotros", "/bicicletas", "/eventos", "/eventos/detalle/**", "/servicios").permitAll()
                         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
