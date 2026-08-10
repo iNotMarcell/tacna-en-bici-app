@@ -3,6 +3,7 @@ package pe.edu.cibertec.tacnaenbici.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pe.edu.cibertec.tacnaenbici.model.Evento;
 import pe.edu.cibertec.tacnaenbici.service.EventoService;
@@ -33,5 +34,17 @@ public class EventoController {
         }
         
         return "eventos";
+    }
+
+    @GetMapping("/detalle/{id}")
+    public String verDetalleNoticia(@PathVariable Long id, Model model) {
+        Evento evento = eventoService.buscarPorId(id).orElse(null);
+
+        if (evento == null) {
+            return "redirect:/eventos";
+        }
+
+        model.addAttribute("evento", evento);
+        return "evento-detalle";
     }
 }
