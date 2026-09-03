@@ -112,7 +112,7 @@
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Dirección Escrita</label>
-                            <input type="text" class="form-control" th:field="*{direccion}" placeholder="Ej. Av. España cuadra 4" required>
+                            <input type="text" class="form-control" th:field="*{direccion}" id="direccion" placeholder="Ej. Av. San Martín cuadra 4" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Punto de referencia</label>
@@ -157,35 +157,84 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
 
-        const map = L.map('map-picker').setView([-8.0894, -78.9616], 14);
+        const map = L.map('map-picker').setView([-18.0146, -70.2536], 14);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
         let marker = null;
 
         const latInput = document.getElementById('latitud');
         const lngInput = document.getElementById('longitud');
+        const direccionInput = document.getElementById('direccion');
+
+        const blackIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41]
+        });
+
+        function actualizarMarcador(lat, lng) {
+            latInput.value = lat;
+            lngInput.value = lng;
+            const latlng = new L.LatLng(lat, lng);
+
+            if(marker) {
+                marker.setLatLng(latlng);
+            } else {
+                marker = L.marker(latlng, {icon: blackIcon}).addTo(map);
+            }
+            map.setView(latlng, 16);
+        }
 
         map.on('click', function(e) {
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
 
-            latInput.value = lat;
-            lngInput.value = lng;
+            actualizarMarcador(lat, lng);
+            direccionInput.placeholder = "Buscando dirección...";
 
-            if(marker) {
-                marker.setLatLng(e.latlng);
-            } else {
-                const blackIcon = new L.Icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    iconSize: [25, 41], iconAnchor: [12, 41]
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        let addressParts = [];
+                        if (data.address.road) addressParts.push(data.address.road);
+                        if (data.address.house_number) addressParts.push(data.address.house_number);
+
+                        let finalAddress = addressParts.join(' ');
+                        if (!finalAddress) finalAddress = data.display_name.split(',')[0];
+
+                        direccionInput.value = finalAddress;
+                    }
+                })
+                .catch(() => {
+                    direccionInput.placeholder = "Escribe la dirección manualmente";
                 });
-                marker = L.marker(e.latlng, {icon: blackIcon}).addTo(map);
-            }
         });
+
+
+        if(direccionInput) {
+
+            direccionInput.addEventListener('change', function(e) {
+
+                const query = e.target.value + ", Tacna, Peru";
+
+                if(e.target.value.trim().length > 3) {
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data && data.length > 0) {
+                                const lat = parseFloat(data[0].lat);
+                                const lng = parseFloat(data[0].lon);
+                                actualizarMarcador(lat, lng);
+                            }
+                        });
+                }
+            });
+        }
     });
 </script>
 
