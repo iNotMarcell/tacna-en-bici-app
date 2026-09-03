@@ -294,9 +294,8 @@
             }
         }
 
-        const map = L.map('map-picker').setView([-8.0894, -78.9616], 14);
+        const map = L.map('map-picker').setView([-18.0146, -70.2536], 14);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
-
         let marker = null;
         const latInput = document.getElementById('latitud');
         const lngInput = document.getElementById('longitud');
